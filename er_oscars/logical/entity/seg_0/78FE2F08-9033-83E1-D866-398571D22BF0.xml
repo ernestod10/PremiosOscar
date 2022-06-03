@@ -1,0 +1,62 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="78FE2F08-9033-83E1-D866-398571D22BF0" name="A_C">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:40:05 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="ID_categoria" id="9560C403-EDA2-0499-0AAD-EDE40BA7BE01">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:40:30 UTC</createdTime>
+<generatorID>4BC57214-0435-1DD5-EB42-0804687C21EA</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>6ACEF035-A8D3-AB77-BE84-203FEC4CB010</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="ID_Actor" id="085EACD0-8417-B480-AD05-F9851CC1198C">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:40:33 UTC</createdTime>
+<generatorID>A28BBC98-CC22-96AD-7AD2-3DC6E16FA143</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>A6458064-B52C-E34D-B884-A62F945E858B</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="8E41E839-478B-3B34-CAF9-3E54E0F346EE" name="A_C PK">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:40:30 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>9560C403-EDA2-0499-0AAD-EDE40BA7BE01</attributeRef>
+<attributeRef>085EACD0-8417-B480-AD05-F9851CC1198C</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

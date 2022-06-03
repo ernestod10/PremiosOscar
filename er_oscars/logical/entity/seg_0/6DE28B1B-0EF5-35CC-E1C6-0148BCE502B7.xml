@@ -1,0 +1,131 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="6DE28B1B-0EF5-35CC-E1C6-0148BCE502B7" name="Pelicula">
+<createdBy>ernes</createdBy>
+<createdTime>2022-05-29 17:09:36 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="ID_Pelicula" id="9C42529E-DE14-A471-9B41-6464E0BF846D">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-02 17:26:45 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Nombre" id="D4685BA8-ECD0-ABA7-003F-FB5469193AA3">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 01:56:29 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>32</dataTypeSize>
+<ownDataTypeParameters>32,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Titulo_original" id="14F397C4-9215-D893-5868-13EE913A1474">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 01:57:02 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>32</dataTypeSize>
+<ownDataTypeParameters>32,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="año" id="B12832F6-12BF-2448-41EE-7BED2D435775">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:04:38 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Genero" id="7D9A4D40-CA01-D5DA-53E4-02C0A19E1BF1">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:04:55 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Duracion" id="930DC501-BD22-DB29-BD04-30F2F994AFB8">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:05:07 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Censura" id="90D662DA-3A02-EB09-1166-129A168464AA">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:05:15 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="fecha" id="6D625DED-28C3-0C04-32D1-7235B8117B22">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:11:29 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="1154026F-B693-0545-D7ED-499E27EE8FC4" name="Pelicula PK">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-02 17:26:52 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>9C42529E-DE14-A471-9B41-6464E0BF846D</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

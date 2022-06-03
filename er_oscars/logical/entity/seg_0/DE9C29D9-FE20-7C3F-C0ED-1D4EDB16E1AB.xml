@@ -1,0 +1,91 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="DE9C29D9-FE20-7C3F-C0ED-1D4EDB16E1AB" name="Nomidado">
+<createdBy>ernes</createdBy>
+<createdTime>2022-05-29 17:14:02 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="ID_Pelicula" id="29758762-EEEC-D998-6118-EB5FD1E8E2C3">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-02 17:38:21 UTC</createdTime>
+<generatorID>572BB32B-D1C3-8DB1-1C42-550C77731EF0</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>9C42529E-DE14-A471-9B41-6464E0BF846D</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="AÑO" id="C3424BE1-72D3-168C-79BD-B57B7DD43B0D">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-02 17:38:24 UTC</createdTime>
+<generatorID>D3CF0A0B-7A08-1F6F-1A7E-DB9893757BBF</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>59879679-8F77-17F8-E7DE-13F8C63D6F37</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="Ganador" id="E4D41913-1D12-FBD4-257C-D1760B310419">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 01:55:47 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT006</logicalDatatype>
+<dataTypeSize>1</dataTypeSize>
+<ownDataTypeParameters>1,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="ID_categoria" id="7FB560A3-A2CF-50A4-030A-4CAFCDF2C403">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 01:58:51 UTC</createdTime>
+<generatorID>CC1CC110-6BC3-9964-E5E9-BDD9185551CD</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>6ACEF035-A8D3-AB77-BE84-203FEC4CB010</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="90562E6B-FF58-750C-54D5-AD57DF3A8E9F" name="Categorias PK">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-02 17:38:21 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>29758762-EEEC-D998-6118-EB5FD1E8E2C3</attributeRef>
+<attributeRef>C3424BE1-72D3-168C-79BD-B57B7DD43B0D</attributeRef>
+<attributeRef>7FB560A3-A2CF-50A4-030A-4CAFCDF2C403</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

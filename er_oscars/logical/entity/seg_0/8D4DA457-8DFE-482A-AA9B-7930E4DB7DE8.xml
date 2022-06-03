@@ -1,0 +1,77 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="8D4DA457-8DFE-482A-AA9B-7930E4DB7DE8" name="Nominacion">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:18:10 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="ID_Pelicula" id="B69E8C82-5001-CFF7-12FC-A3C22C16217D">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:18:56 UTC</createdTime>
+<generatorID>DCAA8949-7B5D-8808-3BA9-56EF327004E2</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>9C42529E-DE14-A471-9B41-6464E0BF846D</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="ID_Actor" id="B0AFBCAB-EB5D-D725-F9BD-D55D15E0B788">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:18:59 UTC</createdTime>
+<generatorID>A6119338-FA74-4AEC-C56A-7170EB9475C0</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>A6458064-B52C-E34D-B884-A62F945E858B</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="ID_categoria" id="10BDDB4F-E14A-5AA1-3719-5FF795234355">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:19:02 UTC</createdTime>
+<generatorID>BB38A08C-39CA-D889-978E-1E99C394E8D8</generatorID>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<referedAttribute>6ACEF035-A8D3-AB77-BE84-203FEC4CB010</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="C4BB80F7-4A85-F259-BCFC-0837A2CC5E2D" name="Postulacion PK">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-03 02:18:56 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>B69E8C82-5001-CFF7-12FC-A3C22C16217D</attributeRef>
+<attributeRef>B0AFBCAB-EB5D-D725-F9BD-D55D15E0B788</attributeRef>
+<attributeRef>10BDDB4F-E14A-5AA1-3719-5FF795234355</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>
