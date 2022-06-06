@@ -27,6 +27,16 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
+<Attribute name="Presentador#" id="54421699-C878-FA6C-2DC3-A68BB1D1875A">
+<createdBy>ernes</createdBy>
+<createdTime>2022-06-05 02:12:23 UTC</createdTime>
+<ownerDesignName>er_oscars</ownerDesignName>
+<engineerTo>
+<item key="4501CA1A-6B4B-05AA-44A5-4CF6819628B2" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
 </attributes>
 <identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
 <identifier id="97CB0F31-B122-BAFC-8480-E2F48A8F6CA6" name="Ceremonia PK">

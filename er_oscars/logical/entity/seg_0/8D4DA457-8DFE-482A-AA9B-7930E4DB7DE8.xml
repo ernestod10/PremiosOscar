@@ -29,7 +29,7 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="ID_Actor" id="B0AFBCAB-EB5D-D725-F9BD-D55D15E0B788">
+<Attribute name="ID" id="B0AFBCAB-EB5D-D725-F9BD-D55D15E0B788">
 <createdBy>ernes</createdBy>
 <createdTime>2022-06-03 02:18:59 UTC</createdTime>
 <generatorID>A6119338-FA74-4AEC-C56A-7170EB9475C0</generatorID>
