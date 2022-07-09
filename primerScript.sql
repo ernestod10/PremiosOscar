@@ -1,4 +1,7 @@
+-- Tipo OO
 
+
+-- Main Script
 CREATE TABLE a_c (
     categoria_premio_id             INTEGER NOT NULL, 
     miembro_academia_id_miembro     INTEGER NOT NULL,
@@ -379,4 +382,23 @@ ALTER TABLE votos_postular
     ADD CONSTRAINT VPpelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
         REFERENCES pelicula_postulada ( id_pelicula );
 
+--Triggers
 
+
+
+
+
+-- Procedures
+
+
+
+
+
+--Roles (seguridad)
+
+
+
+
+
+
+--Inserts
