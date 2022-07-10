@@ -7,7 +7,7 @@ cant_nominaciones  INTEGER
 );
 
 CREATE TYPE hist_donacion AS (
-ano	INTEGER,
+anio	INTEGER,
 porcentaje	INTEGER,
 monto	INTEGER
 );
@@ -41,7 +41,7 @@ ALTER TABLE categoria_premio ADD CONSTRAINT categoria_premio_pk PRIMARY KEY ( id
 
 
 CREATE TABLE ceremonia (
-    año                   INTEGER NOT NULL,
+    anio                   INTEGER NOT NULL,
     numero_edicion        INTEGER NOT NULL,
     fecha                 TIMESTAMP(0) NOT NULL,
     descripcion           VARCHAR(28),
@@ -137,7 +137,7 @@ CREATE TABLE pelicula_postulada (
     nombre           VARCHAR(32) NOT NULL,
     titulo_original  VARCHAR(32) NOT NULL,
     sinopsis         TEXT NOT NULLL,
-    año              INTEGER NOT NULL,
+    anio              INTEGER NOT NULL,
     genero           TEXT ARRAY[4],
     pais             TEXT ARRAY[4],
     distribuidor     TEXT ARRAY[4],
