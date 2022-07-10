@@ -1,4 +1,17 @@
 -- Tipo OO
+CREATE TYPE hist_premios AS (
+fechai	TIMESTAMP(0),
+fechaf	TIMESTAMP(0),
+nombre	VARCHAR(28),
+cant_nominaciones  INTEGER
+);
+
+CREATE TYPE hist_donacion AS (
+ano	INTEGER,
+porcentaje	INTEGER,
+monto	INTEGER
+);
+
 
 
 -- Main Script
@@ -33,7 +46,8 @@ CREATE TABLE ceremonia (
     fecha                 TIMESTAMP(0) NOT NULL,
     descripcion           VARCHAR(28),
     lugar                 VARCHAR(28) NOT NULL,
-    persona_doc_identidad INTEGER NOT NULL
+    persona_doc_identidad INTEGER NOT NULL,
+    historico_premio	  hist_premio[]
 );
 
 ALTER TABLE ceremonia ADD CONSTRAINT ceremonia_pk PRIMARY KEY ( año );
@@ -53,7 +67,7 @@ CREATE TABLE donacion_organizacion (
     id            INTEGER NOT NULL,
     nombre        VARCHAR(28) NOT NULL,
     mision        VARCHAR(28) NOT NULL,
-    hist_donacion unknown 
+    historico_donacion hist_donacion[]
 
 );
 
@@ -122,13 +136,16 @@ CREATE TABLE pelicula_postulada (
     id_pelicula      INTEGER NOT NULL,
     nombre           VARCHAR(32) NOT NULL,
     titulo_original  VARCHAR(32) NOT NULL,
-    sinopsis         unknown 
-,
+    sinopsis         TEXT NOT NULLL,
     año              INTEGER NOT NULL,
-    genero           VARCHAR(28) NOT NULL,
+    genero           TEXT ARRAY[4],
+    pais             TEXT ARRAY[4],
+    distribuidor     TEXT ARRAY[4],
     duracion_min     INTEGER NOT NULL,
     censura          VARCHAR(28) NOT NULL,
-    fecha_estreno_la TIMESTAMP(0) NOT NULL
+    fecha_estreno_la TIMESTAMP(0) NOT NULL,
+    total_nominaciones INTEGER,
+    total_Premios    INTEGER	 
 );
 
 ALTER TABLE pelicula_postulada ADD CONSTRAINT pelicula_postulada_pk PRIMARY KEY ( id_pelicula );
