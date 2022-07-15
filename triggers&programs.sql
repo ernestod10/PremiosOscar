@@ -32,13 +32,14 @@ END;
 Create or replace PROCEDURE contar_nominacion (year Integer )
 AS $$
     DECLARE
+    cont Integer;
         pelicula_postulada_id_pelicula Integer;
         votos_postular_id_voto_postulado Integer;
         votos_postular_id_voto_postulado_count Integer;
         votos_postular_id_voto_postulado_count_max Integer;
 
     BEGIN
-        FOR pelicula_postulada_id_pelicula IN (SELECT pelicula_postulada_id_pelicula FROM pelicula_postulada) LOOP
+        FOR pelicula_postulada_id_pelicula IN (SELECT pelicula_postulada_id_pelicula FROM pelicula_postulada ) LOOP
             votos_postular_id_voto_postulado_count_max := 0;
             FOR votos_postular_id_voto_postulado IN (SELECT votos_postular_id_voto_postulado FROM votos_postular WHERE pelicula_postulada_id_pelicula = pelicula_postulada_id_pelicula) LOOP
                 votos_postular_id_voto_postulado_count := (SELECT COUNT(*) FROM votos_postular WHERE votos_postular_id_voto_postulado = votos_postular_id_voto_postulado);
