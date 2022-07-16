@@ -14,8 +14,6 @@ monto	INTEGER
 
 CREATE TYPE areas AS (
 nombre VARCHAR(28),
-dscripcion VARCHAR(28)
-
 );
 
 CREATE TYPE cancion AS(
@@ -89,11 +87,14 @@ CREATE TABLE miembro_academia (
     id_miembroaacc        INTEGER NOT NULL,
     fecha_i               DATE NOT NULL,
     fecha_f               DATE,
-    vitalicio             CHAR(1) NOT NULL,
+    vitalicio             VARCHAR(3) NOT NULL,
     area                  areas ARRAY[]
 ,
-    persona_doc_identidad INTEGER NOT NULL
+    persona_doc_identidad INTEGER NOT NULL,
+    CONSTRAINT Chk_vitalicio CHECK (sexo IN ('SI', 'NO'))
 );
+
+
 
 
 CREATE UNIQUE INDEX miembro_academia__idx ON
@@ -435,56 +436,56 @@ ALTER TABLE votos_postular
 --Inserts
 
 //personas
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (1, 'Emelen', '2013-01-18', 'Frickey', 'Haley', 'McDougall', null, '1990-10-06', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (2, 'Neville', '2014-03-06', 'Hanford', 'Byron', 'Raccio', null, '1991-12-25', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (3, 'Dwain', '1981-05-09', 'Domenc', 'Solly', 'Lugton', '2013-11-15', '1982-05-23', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (4, 'Oliy', '2004-11-17', 'Ancliffe', 'Maggi', 'Kirley', '2010-09-10', '1979-03-14', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (5, 'Whitaker', '1967-07-10', 'Chiddy', 'Granville', 'Bonnar', null, '1998-02-05', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (1, 'Emelen', '1990-01-18', 'Frickey', 'Haley', 'McDougall', null, '2013-10-06', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (2, 'Neville', '1991-03-06', 'Hanford', 'Byron', 'Raccio', null, '2013-12-25', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (3, 'Dwain', '1980-05-09', 'Domenc', 'Solly', 'Lugton', '2013-11-15', '2000-05-23', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (4, 'Oliy', '1979-11-17', 'Ancliffe', 'Maggi', 'Kirley', '2010-09-10', '2001-03-14', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (5, 'Whitaker', '1968-07-10', 'Chiddy', 'Granville', 'Bonnar', null, '1990-02-05', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (6, 'Vasili', '1970-06-03', 'Livingstone', 'Marwin', 'Runcieman', null, '1986-09-03', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (7, 'Wakefield', '1984-10-19', 'Versey', 'Noah', 'Lucey', null, '1967-06-15', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (8, 'Salaidh', '1970-11-25', 'Seargeant', 'Ginnie', 'Leathwood', '2015-08-16', '1987-01-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (7, 'Wakefield', '1967-10-19', 'Versey', 'Noah', 'Lucey', null, '1984-06-15', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (8, 'Salaidh', '1990-11-25', 'Seargeant', 'Ginnie', 'Leathwood', '2015-08-16', '1987-01-19', 'F');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (9, 'Carl', '2006-05-30', 'Waskett', 'Hall', 'Georg', '2018-02-28', '2017-06-15', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (10, 'Merrili', '1976-12-14', 'Lightwood', 'Barby', 'Steward', null, '1990-02-02', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (11, 'Ardyce', '2012-11-20', 'Audus', 'Billi', 'MacDowal', null, '1977-01-20', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (12, 'Wyatan', '1982-10-29', 'Rate', 'Ciro', 'Simonutti', null, '1988-08-05', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (13, 'Stefa', '1982-12-13', 'Fenge', 'Karen', 'Shanklin', null, '1976-01-10', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (14, 'Cortie', '1978-03-22', 'Akred', 'Hastings', 'Vergine', null, '1970-08-15', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (11, 'Ardyce', '1977-11-20', 'Audus', 'Billi', 'MacDowal', null, '2001-01-20', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (12, 'Wyatan', '1980-10-29', 'Rate', 'Ciro', 'Simonutti', null, '1988-08-05', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (13, 'Stefa', '1976-12-13', 'Fenge', 'Karen', 'Shanklin', null, '1990-01-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (14, 'Cortie', '1960-03-22', 'Akred', 'Hastings', 'Vergine', null, '1980-08-15', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (15, 'Tim', '1968-03-27', 'Maryin', 'Allen', 'Dalgarno', null, '2008-08-13', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (16, 'Zahara', '1979-09-18', 'Gennings', 'Ola', 'Ducker', '2018-07-21', '1989-12-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (16, 'Zahara', '1970-09-18', 'Gennings', 'Ola', 'Ducker', '2018-07-21', '1989-12-18', 'F');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (17, 'Glynn', '1974-08-06', 'McCrackem', 'Keith', 'Erridge', '2019-12-05', '1997-02-07', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (18, 'Lemuel', '2022-05-14', 'Fishburn', 'Holt', 'Dobing', null, '2021-12-14', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (19, 'Hana', '1980-08-06', 'Clubbe', 'Eleanore', 'Stokell', null, '1994-12-26', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (20, 'Franni', '1963-03-03', 'Castille', 'Suzie', 'Hammant', null, '2008-03-27', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (21, 'Thorn', '2020-12-13', 'Brizell', 'Gabby', 'Hazel', null, '2015-01-21', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (22, 'Gratia', '1967-07-18', 'Viscovi', 'Rachelle', 'McTurley', null, '1973-02-19', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (23, 'Dirk', '1990-09-18', 'Bellino', 'Siegfried', 'Markovic', '2017-09-09', '2016-04-14', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (18, 'Lemuel', '1980-05-14', 'Fishburn', 'Holt', 'Dobing', null, '2010-12-14', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (19, 'Hana', '1980-08-06', 'Clubbe', 'Eleanore', 'Stokell', null, '2000-12-26', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (20, 'Franni', '1963-03-03', 'Castille', 'Suzie', 'Hammant', null, '1999-03-27', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (21, 'Thorn', '2000-12-13', 'Brizell', 'Gabby', 'Hazel', null, '2008-01-21', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (22, 'Gratia', '1967-07-18', 'Viscovi', 'Rachelle', 'McTurley', null, '1980-02-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (23, 'Dirk', '1990-09-18', 'Bellino', 'Siegfried', 'Markovic', '2017-09-09', '2010-04-14', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (24, 'Jorey', '2009-12-29', 'Tatchell', 'Carleen', 'Beggan', null, '2021-05-21', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (25, 'Xever', '1996-07-10', 'Pendrick', 'Court', 'Matchett', null, '1971-01-27', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (25, 'Xever', '1996-07-10', 'Pendrick', 'Court', 'Matchett', null, '1975-01-27', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (26, 'Julissa', '1999-08-19', 'Pimlott', 'Jaquenette', 'Alven', null, '2009-03-19', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (27, 'Adelbert', '2015-08-06', 'McGibbon', 'Winny', 'Cabane', null, '2007-03-03', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (27, 'Adelbert', '1985-08-06', 'McGibbon', 'Winny', 'Cabane', null, '2007-03-03', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (28, 'Meredith', '1987-12-09', 'Kitchener', 'Calhoun', 'Furman', null, '2018-01-24', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (29, 'Carmela', '1987-02-13', 'Quest', 'Lorain', 'Wycliffe', null, '1992-03-18', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (30, 'L;urette', '2002-08-06', 'Bensley', 'Arabela', 'Albasiny', '2018-09-03', '2006-05-10', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (31, 'Robinson', '1975-06-10', 'Brazer', 'Brent', 'Osborn', null, '2019-10-22', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (32, 'Drusy', '1989-08-29', 'Ezele', 'Katharyn', 'Bottom', '2011-12-02', '2008-07-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (30, 'L;urette', '2002-08-06', 'Bensley', 'Arabela', 'Albasiny', '2016-09-03', '2006-05-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (31, 'Robinson', '1975-06-10', 'Brazer', 'Brent', 'Osborn', null, '2005-10-22', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (32, 'Drusy', '1989-08-29', 'Ezele', 'Katharyn', 'Bottom', '2011-12-02', '2002-07-18', 'F');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (33, 'Fredi', '1979-11-02', 'Dunrige', 'Starla', 'Trevaskiss', null, '1991-07-04', 'F');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (34, 'Joellyn', '1963-01-01', 'Matessian', 'Rosalie', 'Crafter', '2011-11-22', '1986-05-11', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (35, 'Skippie', '1994-05-03', 'Ramberg', 'Faulkner', 'Clement', null, '2022-06-26', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (36, 'Rhetta', '1972-04-12', 'Shermore', 'Vanny', 'Cameli', '2015-06-07', '2020-06-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (35, 'Skippie', '1994-05-03', 'Ramberg', 'Faulkner', 'Clement', null, '2010-06-26', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (36, 'Rhetta', '1972-04-12', 'Shermore', 'Vanny', 'Cameli', '2015-06-07', '1999-06-18', 'F');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (37, 'Florinda', '1969-08-14', 'Missington', 'Rosemonde', 'McKirton', null, '1993-03-13', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (38, 'Roosevelt', '2021-02-26', 'Kinghorn', 'Dominik', 'Pass', null, '2011-05-14', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (38, 'Roosevelt', '2000-02-26', 'Kinghorn', 'Dominik', 'Pass', null, '2007-05-14', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (39, 'Grady', '1995-10-16', 'Rulf', 'Stevy', 'Akerman', '2020-02-12', '2005-08-28', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (40, 'Donnamarie', '1987-03-05', 'Reignolds', 'Annabela', 'McCalum', null, '1974-05-14', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (40, 'Donnamarie', '1987-03-05', 'Reignolds', 'Annabela', 'McCalum', null, '1995-05-14', 'F');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (41, 'Peg', '1969-10-17', 'Hartridge', 'Meta', 'McMinn', null, '1989-06-16', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (42, 'Odilia', '1988-02-18', 'Pudner', 'Ruby', 'Anear', null, '1974-02-10', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (43, 'Danila', '2009-05-29', 'Seath', 'Eileen', 'Yvens', '2011-12-18', '1974-01-11', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (44, 'Borden', '1980-02-13', 'Selburn', 'Jabez', 'Ellaman', '2014-02-23', '1992-10-21', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (42, 'Odilia', '1988-02-18', 'Pudner', 'Ruby', 'Anear', null, '1995-02-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (43, 'Danila', '1966-05-29', 'Seath', 'Eileen', 'Yvens', '2011-12-18', '1974-01-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (44, 'Borden', '1955-02-13', 'Selburn', 'Jabez', 'Ellaman', '2014-02-23', '1990-10-21', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (45, 'Frances', '1982-02-25', 'Fielders', 'Maurita', 'Portinari', null, '1989-04-23', 'F');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (46, 'Kingsly', '1965-09-15', 'Banham', 'Kit', 'Shier', null, '1976-04-24', 'M');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (47, 'Lyn', '1996-09-21', 'Spincks', 'Ashely', 'Varty', null, '1988-01-14', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (48, 'Bili', '1971-03-14', 'Trainor', 'Cynthea', 'MacTrusty', null, '2021-03-23', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (49, 'Cinnamon', '2000-03-03', 'Sleford', 'Juline', 'Ridgers', '2017-07-20', '1993-10-24', 'F');
-insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (50, 'Benjie', '2014-12-06', 'Hutcheon', 'Euell', 'Sture', null, '1998-10-29', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (47, 'Lyn', '1996-09-21', 'Spincks', 'Ashely', 'Varty', null, '2005-01-14', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (48, 'Bili', '1971-03-14', 'Trainor', 'Cynthea', 'MacTrusty', null, '2002-03-23', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (49, 'Cinnamon', '1993-03-03', 'Sleford', 'Juline', 'Ridgers', '2017-07-20', '2007-10-24', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (50, 'Benjie', '1989-12-06', 'Hutcheon', 'Euell', 'Sture', null, '2009-10-29', 'M');
 
 
 //peliculas
@@ -510,3 +511,7 @@ insert into rol (id, nombre, descripcion) values (5,'maquillaje',' persona que t
 insert into rol (id, nombre, descripcion) values (6,'estilista','Las estilistas son los profesionales encargados de crear una armonía estética alrededor de un sujeto o escenario.');
 insert into rol (id, nombre, descripcion) values (7,'animadores','animador crea animaciones y efectos visuales para televisión, películas, videojuegos y otros medios.');
 insert into rol (id, nombre, descripcion) values (8,'vestuario','encargado de vestimenta a usar por un sujeto.');
+
+miebro de academia
+
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (1,'2018-12-1',null,'NO',ARRAY[('actor')::areas,('director')::areas],1);
