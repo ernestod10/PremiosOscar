@@ -13,7 +13,7 @@ monto	INTEGER
 );
 
 CREATE TYPE areas AS (
-nombre VARCHAR(28)
+nombre VARCHAR(28),
 );
 
 CREATE TYPE cancion AS(
@@ -26,25 +26,27 @@ compositor VARCHAR(28)
 
 -- Main Script
 CREATE TABLE a_c (
-    categoria_premio_id             INTEGER NOT NULL,
+    categoria_premio_id             INTEGER NOT NULL, 
     miembro_academia_id_miembro     INTEGER NOT NULL,
     miembro_academia_doc_id         INTEGER NOT NULL
 );
 
 ALTER TABLE a_c
     ADD CONSTRAINT a_c_pk PRIMARY KEY ( categoria_premio_id,
-                                        miembro_academia_id_miembro,
-                                        miembro_academia_doc_id );
+                                        miembro_academia_id_miembroaacc,
+                                        miembro_academia_doc_identidad );
 
 CREATE TABLE categoria_premio (
     id                  INTEGER NOT NULL,
     nombre              VARCHAR(28) NOT NULL,
     nivel               INTEGER NOT NULL,
-    rama                VARCHAR(28),
-    descripcion         VARCHAR(28) NOT NULL,
-    historico_premio	hist_premios[],
-    categoria_premio_id INTEGER NOT NULL
+    descripcion         TEXT NOT NULL,
+    categoria_premio_id INTEGER,
+    historico_premio	hist_premios ARRAY[100]
 );
+
+
+
 
 ALTER TABLE categoria_premio ADD CONSTRAINT categoria_premio_pk PRIMARY KEY ( id );
 
@@ -56,10 +58,10 @@ CREATE TABLE ceremonia (
     descripcion           TEXT,
     lugar                 VARCHAR(28) NOT NULL,
     persona_doc_identidad INTEGER NOT NULL
-
+    
 );
 
-ALTER TABLE ceremonia ADD CONSTRAINT ceremonia_pk PRIMARY KEY ( anio );
+ALTER TABLE ceremonia ADD CONSTRAINT ceremonia_pk PRIMARY KEY ( año );
 
 
 CREATE TABLE critica (
@@ -76,7 +78,7 @@ CREATE TABLE donacion_organizacion (
     id            INTEGER NOT NULL,
     nombre        VARCHAR(28) NOT NULL,
     mision        VARCHAR(28) NOT NULL,
-    historico_donacion hist_donacion[]
+    historico_donacion hist_donacion ARRAY[]
 
 );
 
@@ -88,10 +90,10 @@ CREATE TABLE miembro_academia (
     fecha_i               DATE NOT NULL,
     fecha_f               DATE,
     vitalicio             VARCHAR(3) NOT NULL,
-    area                  areas[]
-,
     persona_doc_identidad INTEGER NOT NULL,
-    CONSTRAINT Chk_vitalicio CHECK (vitalicio IN ('SI', 'NO'))
+    area                  areas ARRAY[50],
+    
+    CONSTRAINT Chk_vitalicio CHECK (sexo IN ('SI', 'NO'))
 );
 
 
@@ -109,7 +111,7 @@ ALTER TABLE miembro_academia ADD CONSTRAINT miembro_academia_pk PRIMARY KEY ( id
 CREATE TABLE nominacion (
     id                              INTEGER NOT NULL,
     ganador                         CHAR(1) NOT NULL,
-    postulacion_id_pelicula         INTEGER NOT NULL,
+    postulacion_id_pelicula         INTEGER NOT NULL, 
 
     post_categoria_premio_id        INTEGER NOT NULL,
     postulacion_id_miembroaacc      INTEGER NOT NULL,
@@ -121,7 +123,7 @@ CREATE TABLE nominacion (
 ALTER TABLE nominacion
     ADD CONSTRAINT nominacion_pk PRIMARY KEY ( id,
                                                postulacion_id_pelicula,
-                                               post_categoria_premio_id,
+                                               postulacion_categoria_premio_id,
                                                postulacion_id_miembroaacc,
                                                postulacion_id,
                                                postulacion_año_oscar,
@@ -145,7 +147,7 @@ CREATE TABLE pelicula_postulada (
     id_pelicula      INTEGER NOT NULL,
     nombre           VARCHAR(32) NOT NULL,
     titulo_original  VARCHAR(32) NOT NULL,
-    sinopsis         TEXT NOT NULL,
+    sinopsis         TEXT NOT NULLL,
     anio              INTEGER NOT NULL,
     genero           TEXT ARRAY[4],
     pais             TEXT ARRAY[4],
@@ -155,7 +157,7 @@ CREATE TABLE pelicula_postulada (
     fecha_estreno_la DATE NOT NULL,
     total_nominaciones INTEGER,
     total_Premios    INTEGER,
-    foto             TEXT
+    foto             TEXT,	 
 );
 
 ALTER TABLE pelicula_postulada ADD CONSTRAINT pelicula_postulada_pk PRIMARY KEY ( id_pelicula );
@@ -169,7 +171,7 @@ CREATE TABLE persona (
     segundo_Nombre       VARCHAR(28),
     segundo_Apellido     VARCHAR(28),
     fecha_defuncion      DATE ,
-    fecha_inicio_carrera DATE,
+    fecha_inicio_carrera DATE, 
     sexo                 VARCHAR(3) NOT NULL,
     CONSTRAINT Chk_sexo CHECK (sexo IN ('M', 'F'))
 
@@ -180,11 +182,12 @@ ALTER TABLE persona ADD CONSTRAINT persona_pk PRIMARY KEY ( doc_identidad );
 
 CREATE TABLE postulacion (
     id                              INTEGER NOT NULL,
-    año_oscar                       INTEGER NOT NULL,
+    año_oscar                       INTEGER NOT NULL, 
+,
     pelicula_postulada_id_pelicula  INTEGER NOT NULL,
-    categoria_premio_id             INTEGER NOT NULL,
+    categoria_premio_id             INTEGER NOT NULL, 
 
-    miembro_academia_id_maacc    INTEGER NOT NULL,
+    miembro_academia_id_miembroa    INTEGER NOT NULL,
     p_m_r_id_pelicula               INTEGER NOT NULL,
     p_m_r_doc_identidad             INTEGER NOT NULL,
     p_m_r_rol_id                    INTEGER NOT NULL,
@@ -194,7 +197,7 @@ CREATE TABLE postulacion (
 ALTER TABLE postulacion
     ADD CONSTRAINT postulacion_pk PRIMARY KEY ( pelicula_postulada_id_pelicula,
                                                 categoria_premio_id,
-                                                miembro_academia_id_maacc,
+                                                miembro_academia_id_miembroaacc,
                                                 miembro_academia_doc_identidad,
                                                 id,
                                                 año_oscar );
@@ -207,7 +210,7 @@ CREATE TABLE presentador (
 );
 
 ALTER TABLE presentador
-    ADD CONSTRAINT presentador_pk PRIMARY KEY ( ceremonia_anio,
+    ADD CONSTRAINT presentador_pk PRIMARY KEY ( ceremonia_año,
                                                 categoria_premio_id,
                                                 persona_doc_identidad );
 
@@ -230,38 +233,38 @@ CREATE TABLE votos (
     tipo                                       VARCHAR(1) NOT NULL,
 
     miembro_academia_id_miembro                INTEGER NOT NULL,
-    nominacion_id                              INTEGER NOT NULL,
+    nominacion_id                              INTEGER NOT NULL, 
 
-    nominacion_post_id_pelicula                INTEGER NOT NULL,
-    nom_post_cat_premio_id                     INTEGER NOT NULL,
+    nominacion_post_id_pelicula                INTEGER NOT NULL, 
+    nom_post_cat_premio_id                     INTEGER NOT NULL, 
     nominacion_postulacion_id_miemb            INTEGER NOT NULL,
-    nominacion_postulacion_id                  INTEGER NOT NULL,
+    nominacion_postulacion_id                  INTEGER NOT NULL, 
     nominacion_postulacion_año_oscar           INTEGER
 ,
-    postulacion_id_pelicula                    INTEGER NOT NULL,
+    postulacion_id_pelicula                    INTEGER NOT NULL, 
 
     post_categoria_premio_id                   INTEGER NOT NULL,
     postulacion_id_miembroaacc                 INTEGER NOT NULL,
     postulacion_id                             INTEGER NOT NULL,
     postulacion_año_oscar                      INTEGER
 ,
-    postulacion_doc_identidad1                 INTEGER NOT NULL,
+    postulacion_doc_identidad1                 INTEGER NOT NULL, 
     nom_post_doc_identidad1                    INTEGER NOT NULL,
     miembro_academia_doc_identidad             INTEGER NOT NULL
 );
 
 ALTER TABLE votos
-    ADD CONSTRAINT votos_pk PRIMARY KEY ( miembro_academia_id_miembro,
+    ADD CONSTRAINT votos_pk PRIMARY KEY ( miembro_academia_id_miembroaacc,
                                           id,
                                           nominacion_id,
-                                          nominacion_post_id_pelicula,
-                                          nom_post_cat_premio_id,
-                                          nominacion_postulacion_id_miemb,
+                                          nominacion_postulacion_id_pelicula,
+                                          nominacion_postulacion_categoria_premio_id,
+                                          nominacion_postulacion_id_miembroaacc,
                                           nominacion_postulacion_id,
                                           nominacion_postulacion_año_oscar,
-                                          nom_post_doc_identidad1,
+                                          nominacion_postulacion_doc_identidad1,
                                           postulacion_id_pelicula,
-                                          post_categoria_premio_id,
+                                          postulacion_categoria_premio_id,
                                           postulacion_id_miembroaacc,
                                           postulacion_id,
                                           postulacion_año_oscar,
@@ -270,7 +273,7 @@ ALTER TABLE votos
 
 CREATE TABLE votos_postular (
     año                             VARCHAR(28) NOT NULL,
-    pelicula_postulada_id_pelicula  INTEGER NOT NULL,
+    pelicula_postulada_id_pelicula  INTEGER NOT NULL, 
     miembro_academia_id_miembro     INTEGER NOT NULL,
     miembro_academia_doc_identidad  INTEGER NOT NULL
 );
@@ -278,7 +281,7 @@ CREATE TABLE votos_postular (
 ALTER TABLE votos_postular
     ADD CONSTRAINT votos_postular_pk PRIMARY KEY ( año,
                                                    pelicula_postulada_id_pelicula,
-                                                   miembro_academia_id_miembro,
+                                                   miembro_academia_id_miembroaacc,
                                                    miembro_academia_doc_identidad );
 
 ALTER TABLE a_c
@@ -286,8 +289,8 @@ ALTER TABLE a_c
         REFERENCES categoria_premio ( id );
 
 ALTER TABLE a_c
-    ADD CONSTRAINT a_c_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
-                                                         miembro_academia_doc_id )
+    ADD CONSTRAINT a_c_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
+                                                         miembro_academia_doc_identidad )
         REFERENCES miembro_academia ( id_miembroaacc,
                                       persona_doc_identidad );
 
@@ -306,14 +309,14 @@ ALTER TABLE miembro_academia
 
 ALTER TABLE nominacion
     ADD CONSTRAINT nominacion_postulacion_fk FOREIGN KEY ( postulacion_id_pelicula,
-                                                           post_categoria_premio_id,
+                                                           postulacion_categoria_premio_id,
                                                            postulacion_id_miembroaacc,
                                                            postulacion_doc_identidad1,
                                                            postulacion_id,
                                                            postulacion_año_oscar )
         REFERENCES postulacion ( pelicula_postulada_id_pelicula,
                                  categoria_premio_id,
-                                 miembro_academia_id_maacc,
+                                 miembro_academia_id_miembroaacc,
                                  miembro_academia_doc_identidad,
                                  id,
                                  año_oscar );
@@ -335,7 +338,7 @@ ALTER TABLE postulacion
         REFERENCES categoria_premio ( id );
 
 ALTER TABLE postulacion
-    ADD CONSTRAINT post_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_maacc,
+    ADD CONSTRAINT post_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
                                                                  miembro_academia_doc_identidad )
         REFERENCES miembro_academia ( id_miembroaacc,
                                       persona_doc_identidad );
@@ -358,30 +361,30 @@ ALTER TABLE presentador
         REFERENCES categoria_premio ( id );
 
 ALTER TABLE presentador
-    ADD CONSTRAINT presentador_ceremonia_fk FOREIGN KEY ( ceremonia_anio )
-        REFERENCES ceremonia ( anio );
+    ADD CONSTRAINT presentador_ceremonia_fk FOREIGN KEY ( ceremonia_año )
+        REFERENCES ceremonia ( año );
 
 ALTER TABLE presentador
     ADD CONSTRAINT presentador_persona_fk FOREIGN KEY ( persona_doc_identidad )
         REFERENCES persona ( doc_identidad );
 
 ALTER TABLE votos
-    ADD CONSTRAINT votos_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
+    ADD CONSTRAINT votos_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
                                                            miembro_academia_doc_identidad )
         REFERENCES miembro_academia ( id_miembroaacc,
                                       persona_doc_identidad );
 
 ALTER TABLE votos
     ADD CONSTRAINT votos_nominacion_fk FOREIGN KEY ( nominacion_id,
-                                                     nominacion_post_id_pelicula,
-                                                     nom_post_cat_premio_id,
-                                                     nominacion_postulacion_id_miemb,
+                                                     nominacion_postulacion_id_pelicula,
+                                                     nominacion_postulacion_categoria_premio_id,
+                                                     nominacion_postulacion_id_miembroaacc,
                                                      nominacion_postulacion_id,
                                                      nominacion_postulacion_año_oscar,
-                                                     nom_post_doc_identidad1 )
+                                                     nominacion_postulacion_doc_identidad1 )
         REFERENCES nominacion ( id,
                                 postulacion_id_pelicula,
-                                post_categoria_premio_id,
+                                postulacion_categoria_premio_id,
                                 postulacion_id_miembroaacc,
                                 postulacion_id,
                                 postulacion_año_oscar,
@@ -389,21 +392,21 @@ ALTER TABLE votos
 
 ALTER TABLE votos
     ADD CONSTRAINT votos_postulacion_fk FOREIGN KEY ( postulacion_id_pelicula,
-                                                      post_categoria_premio_id,
+                                                      postulacion_categoria_premio_id,
                                                       postulacion_id_miembroaacc,
                                                       postulacion_doc_identidad1,
                                                       postulacion_id,
                                                       postulacion_año_oscar )
         REFERENCES postulacion ( pelicula_postulada_id_pelicula,
                                  categoria_premio_id,
-                                 miembro_academia_id_maacc,
+                                 miembro_academia_id_miembroaacc,
                                  miembro_academia_doc_identidad,
                                  id,
                                  año_oscar );
 
 
 ALTER TABLE votos_postular
-    ADD CONSTRAINT VPmiembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
+    ADD CONSTRAINT VPmiembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
                                                                     miembro_academia_doc_identidad )
         REFERENCES miembro_academia ( id_miembroaacc,
                                       persona_doc_identidad );
@@ -513,15 +516,59 @@ insert into rol (id, nombre, descripcion) values (8,'vestuario','encargado de ve
 
 //miebro de academia
 
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (1,'2018-01-1',null,'NO',ARRAY[('actor')::areas,('director')::areas],1);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (2,'2015-02-1',null,'SI',ARRAY[('actor')::areas],2);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (3,'2003-02-1',null,'NO',ARRAY[('compositor')::areas],3);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (4,'2015-03-1',null,'SI',ARRAY[('actor')::areas],4);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (5,'2000-11-1',null,'SI',ARRAY[('actor')::areas,('director')::areas],5);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (6,'2004-09-1',null,'NO',ARRAY[('escritor')::areas],6);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (7,'1990-01-1',null,'NO',ARRAY[('director')::areas],7);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (8,'1991-12-1',null,'SI',ARRAY[('vestuario')::areas],8);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (9,'2015-12-1',null,'SI',ARRAY[('maquillaje')::areas],9);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (10,'2010-12-1',null,'NO',ARRAY[('estilista')::areas],10);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (11,'2008-12-1',null,'NO',ARRAY[('actor')::areas],11);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,area,persona_doc_identidad) values (12,'2008-12-1',null,'NO',ARRAY[('actor')::areas],12);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (1,'2018-01-1',null,'NO',1,ARRAY[('actor')::areas,('director')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (2,'2015-02-1',null,'SI',2,ARRAY[('actor')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (3,'2003-02-1',null,'NO',3,ARRAY[('compositor')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (4,'2015-03-1',null,'SI',4,ARRAY[('actor')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (5,'2000-11-1',null,'SI',5,ARRAY[('actor')::areas,('director')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (6,'2004-09-1',null,'NO',6,ARRAY[('escritor')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (7,'1990-01-1',null,'NO',7,ARRAY[('director')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (8,'1991-12-1',null,'SI',8,ARRAY[('vestuario')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (9,'2015-12-1',null,'SI',9,ARRAY[('maquillaje')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (10,'2010-12-1',null,'NO',10,ARRAY[('estilista')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (11,'2008-12-1',null,'NO',11,ARRAY[('actor')::areas]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (12,'2008-12-1',null,'NO',12,ARRAY[('actor')::areas]);
+
+
+//categoria_premio
+
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (1,'largometrajes',1,'categoria dirigida a los largometrajes',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (2,'direccion',1,'categoria dirigida a los directores',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (3,'actuacion',1,'categoria dirigida a los actores',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (4,'escritura',1,'categoria dirigida a los escritores',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (5,'fotografia',1,'categoria dirigida a los fotografos',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (6,'sonido',1,'categoria dirigida al sonido',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (7,'direccion de arte',1,'categoria dirigida a los artistas',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (8,'cortometrajes',1,'categoria dirigida a los cortometrajes',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (9,'musica',1,'categoria dirigida a la musica',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (10,'peliculas animadas',1,'categoria dirigida a las animaciones',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (11,'vestuario',1,'categoria dirigida al vestuario',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (12,'maquillaje',1,'categoria dirigida al maquillaje',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (13,'documentales',1,'categoria dirigida a los documentales',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (14,'pelicula extranjera',1,'categoria dirigida a las peliculas extranjeras',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (27,'edicion',1,'categoria dirigida a las ediciones',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (15,'efectos visuales',1,'categoria dirigida a los efectos visuales',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (16,'mejor pelicula',2,'premio a mejor pelicula',1,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (17,'mejor director',2,'premio a mejor director',2,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (18,'mejor actor',2,'premio a mejor actor',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (19,'mejor actriz',2,'premio a mejor actriz',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (20,'mejor guion adaptado',2,'premio a mejor guion',4,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (21,'mejor fotografia',2,'premio a mejor fotografia',5,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (22,'mejor direccion de arte',2,'premio mejor direccion de arte',7,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (23,'mejor sonido',2,'premio mejor sonido',6,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (24,'mejor cortometraje de ficcion',2,'premio mejor cortometraje',8,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (25,'mejor banda sonora',2,'premio mejor banda sonora',9,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (26,'mejor cancion original',2,'premio mejor cancion original',9,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (28,'mejor montaje',2,'premio mejor montaje',28,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (29,'mejor actor de reparto',2,'premio mejor actor de reparto',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (30,'mejor actriz de reparto',2,'premio mejor actriz de reparto',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (31,'mejor efectos visuales',2,'premio mejores efectos visuales',15,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (32,'mejor guion original',2,'premio mejor guion original',4,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (33,'mejor documental largo',2,'premio mejor documental largo',13,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (34,'mejor documental corto',2,'premio mejor documental corto',13,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (35,'mejor diseño de vestuario',2,'premio mejor diseño de vestuario',11,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (36,'mejor pelicula no habla inglesa',2,'premio mejor dpelicula de no habla inglesa',14,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (37,'mejor edicion de sonido',2,'premio mejor edicion de sonido',6,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (38,'mejor maquillaje',2,'premio mejor maquillaje',12,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (39,'mejor pelicula de animacion',2,'premio mejor pelicula de animacion',10,ARRAY[(null,null,null,null)::hist_premios]);
+
