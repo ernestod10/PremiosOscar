@@ -168,23 +168,22 @@ ALTER TABLE persona ADD CONSTRAINT persona_pk PRIMARY KEY ( doc_identidad );
 
 CREATE TABLE postulacion (
     id                              INTEGER NOT NULL,
-    año_oscar                       unknown 
-,
+    año_oscar                       INTEGER,
     pelicula_postulada_id_pelicula  INTEGER NOT NULL,
     categoria_premio_id             INTEGER NOT NULL, 
 
-    miembro_academia_id_miembroa    INTEGER NOT NULL,
+    --miembro_academia_id_miembroa    INTEGER NOT NULL,
     p_m_r_id_pelicula               INTEGER NOT NULL,
     p_m_r_doc_identidad             INTEGER NOT NULL,
     p_m_r_rol_id                    INTEGER NOT NULL,
-    miembro_academia_doc_identidad  INTEGER NOT NULL
+    --miembro_academia_doc_identidad  INTEGER NOT NULL
 );
 
 ALTER TABLE postulacion
     ADD CONSTRAINT postulacion_pk PRIMARY KEY ( pelicula_postulada_id_pelicula,
                                                 categoria_premio_id,
-                                                miembro_academia_id_miembroaacc,
-                                                miembro_academia_doc_identidad,
+                                                --miembro_academia_id_miembroaacc,
+                                                --miembro_academia_doc_identidad,
                                                 id,
                                                 año_oscar );
 
@@ -399,19 +398,64 @@ ALTER TABLE votos_postular
     ADD CONSTRAINT VPpelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
         REFERENCES pelicula_postulada ( id_pelicula );
 
---Triggers
 
+Create or replace TRIGGER "votos_postular_trigger" BEFORE INSERT ON "votos_postular"
+FOR EACH ROW
+BEGIN
+    SELECT raise_application_error('22023', 'un miembro de academia no puede postular a mas de 3 peliculas')
+    WHERE NEW.votos_postular_id_voto_postulado IS NOT NULL AND
+    (SELECT COUNT(*) FROM votos_postular WHERE miembro_academia_id_miembro = NEW.miembro_academia_id_miembro) > 2;
+END;
+
+Create or replace TRIGGER "votos_nominar_trigger" BEFORE INSERT ON "votos"
+FOR EACH ROW
+BEGIN
+    SELECT raise_application_error('22023', 'un miembro de academia no puede nominar a mas de 2 peliculas')
+    WHERE 
+    (SELECT COUNT(*) FROM Votos WHERE miembro_academia_id_miembro = NEW.miembro_academia_id_miembro) > 1 and nominacion_id is null; ;
+END;
+
+Create or replace TRIGGER "votos_ganador_trigger" BEFORE INSERT ON "votos"
+FOR EACH ROW
+BEGIN
+    SELECT raise_application_error('22023', 'un miembro de academia no puede votar a mas de 2 peliculas')
+    WHERE 
+    (SELECT COUNT(*) FROM Votos WHERE miembro_academia_id_miembro = NEW.miembro_academia_id_miembro) > 1 AND postulacion_id_pelicula is null;
+END;
 
 
 
 
 -- Procedures
 
+--counts the number of times pelicula_postulada_id_pelicula repeats from votos_postular and inserts the top 35 into postulacion
+Create or replace PROCEDURE contar_nominacion (year Integer )
+AS $$
+    DECLARE
+    id_pelicula Integer;
+    categoria_premio_id Integer;
+    area integer:
+    cont Integer;
+    BEGIN
+    FOR id_pelicula in (select pelicula_postulada_id_pelicula, count(pelicula_postulada_id_pelicula) from votos_postular where año_oscar = year group by pelicula_postulada_id_pelicula order by count(pelicula_postulada_id_pelicula) desc limit 35)LOOP
+        for categoria_premio_id in (select id from categoria_premio where nivel == 2)loop
+        insert into postulacion(pelicula_postulada_id_pelicula, categoria_premio_id, año_oscar) values(pelicula_postulada_id_pelicula, 1, year);
+        END LOOP;
+    END LOOP;
+    END;
+
+
+-- Vistas
+-- create vew for pelicula_postulada joined with votos_postular
+CREATE VIEW pelicula_postulada_votos_postular AS
 
 
 
 
 --Roles (seguridad)
+
+Create role Miembro_Academia;
+grant Miembro_Academia select on pelicula_postulada_votos_postular;
 
 
 
