@@ -1,57 +1,44 @@
+create or replace function votos_postular_fn() returns trigger as $vpTrigger$
+    begin
+        if (SELECT COUNT(*) FROM votos_postular WHERE miembro_academia_id_miembro = NEW.miembro_academia_id_miembro) > 2 then
+            raise exception 'un miembro de academia no puede postular mas de 3 peliculas';
+        end if;
+    end;
 
-Create or replace TRIGGER "votos_postular_trigger" BEFORE INSERT ON "votos_postular"
-FOR EACH ROW
-BEGIN
-    SELECT raise_application_error('22023', 'un miembro de academia no puede postular a mas de 2 peliculas')
-    WHERE NEW.votos_postular_id_voto_postulado IS NOT NULL AND
-    (SELECT COUNT(*) FROM votos_postular WHERE miembro_academia_id_miembro = NEW.miembro_academia_id_miembro) > 1;
-END;
 
-Create or replace TRIGGER "votos_nominar_trigger" BEFORE INSERT ON "votos"
-FOR EACH ROW
-BEGIN
-    SELECT raise_application_error('22023', 'un miembro de academia no puede postular a mas de 2 peliculas')
-    WHERE NEW.votos_postular_id_voto_postulado IS NOT NULL AND
-    (SELECT COUNT(*) FROM Votos WHERE miembro_academia_id_miembro = NEW.miembro_academia_id_miembro) > 1 and ;
-END;
 
-Create or replace TRIGGER "votos_ganador_trigger" BEFORE INSERT ON "votos"
+    $vpTrigger$ language plpgsql;
+
+
+Create  TRIGGER "VP_trigger" BEFORE INSERT ON "votos_postular"
 FOR EACH ROW
-BEGIN
-    SELECT raise_application_error('22023', 'un miembro de academia no puede postular a mas de 2 peliculas')
-    WHERE NEW.votos_postular_id_voto_postulado IS NOT NULL AND
-    (SELECT COUNT(*) FROM Votos WHERE miembro_academia_id_miembro = NEW.miembro_academia_id_miembro) > 1 AND;
+execute procedure votos_postular_fn();
 END;
 
 
 
 
--- Procedures
-
---counts the number of times pelicula_postulada_id_pelicula repeats from votos_postular and inserts the top 35 into postulacion
 Create or replace PROCEDURE contar_nominacion (year Integer )
 AS $$
     DECLARE
-    cont Integer;
-        pelicula_postulada_id_pelicula Integer;
-        votos_postular_id_voto_postulado Integer;
-        votos_postular_id_voto_postulado_count Integer;
-        votos_postular_id_voto_postulado_count_max Integer;
-
+    id_post Integer;
+    id_cat integer;
     BEGIN
-        FOR pelicula_postulada_id_pelicula IN (SELECT pelicula_postulada_id_pelicula FROM pelicula_postulada ) LOOP
-            votos_postular_id_voto_postulado_count_max := 0;
-            FOR votos_postular_id_voto_postulado IN (SELECT votos_postular_id_voto_postulado FROM votos_postular WHERE pelicula_postulada_id_pelicula = pelicula_postulada_id_pelicula) LOOP
-                votos_postular_id_voto_postulado_count := (SELECT COUNT(*) FROM votos_postular WHERE votos_postular_id_voto_postulado = votos_postular_id_voto_postulado);
-                IF votos_postular_id_voto_postulado_count > votos_postular_id_voto_postulado_count_max THEN
-                    votos_postular_id_voto_postulado_count_max := votos_postular_id_voto_postulado_count;
-                END IF;
-            END LOOP;
-            INSERT INTO postulacion (pelicula_postulada_id_pelicula, votos_postular_id_voto_postulado_count) VALUES (pelicula_postulada_id_pelicula, votos_postular_id_voto_postulado_count_max);
+    FOR id_cat in (select id from categoria_premio where nivel = 2)LOOP
+        For id_post in (select p.id from postulacion p inner join votos v on p.id = v.postulacion_id where  post_categoria_premio_id = id_cat
+                                          group by p.id
+                                          order by count(v.postulacion_id)
+                                          desc limit 10) LOOP
+        insert into nominacion (id, ganador, postulacion_id_pelicula, post_categoria_premio_id, postulacion_id_miembroaacc, postulacion_id, postulacion_año_oscar, postulacion_doc_identidad1)
+        VALUES (1,false,(select pelicula_postulada_id_pelicula from postulacion where id = id_post),id_cat,(select miembro_academia_id_maacc from postulacion where id = id_post),id_post, year,(select miembro_academia_doc_identidad from postulacion where id = id_post));
         END LOOP;
+    END LOOP;
     END;
+$$
+language plpgsql;
 
--- counts the top 
+
+
 
 
 
