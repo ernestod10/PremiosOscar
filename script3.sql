@@ -115,7 +115,7 @@ CREATE TABLE nominacion (
     post_categoria_premio_id        INTEGER NOT NULL,
     --postulacion_id_miembroaacc      INTEGER NOT NULL,
     postulacion_id                  INTEGER NOT NULL,
-    postulacion_año_oscar           INTEGER NOT NULL
+    postulacion_anio_oscar           INTEGER NOT NULL
     --postulacion_doc_identidad1      INTEGER NOT NULL
 );
 
@@ -125,7 +125,7 @@ ALTER TABLE nominacion
                                                post_categoria_premio_id,
 
                                                postulacion_id,
-                                               postulacion_año_oscar
+                                               postulacion_anio_oscar
                                                 );
 
 
@@ -181,7 +181,7 @@ ALTER TABLE persona ADD CONSTRAINT persona_pk PRIMARY KEY ( doc_identidad );
 
 CREATE TABLE postulacion (
     id               serial not null,
-    año_oscar                       INTEGER NOT NULL,
+    anio_oscar                       INTEGER NOT NULL,
     pelicula_postulada_id_pelicula  INTEGER NOT NULL,
     categoria_premio_id             INTEGER NOT NULL,
 
@@ -197,7 +197,7 @@ ALTER TABLE postulacion
                                                 --miembro_academia_id_maacc,
                                                 --miembro_academia_doc_identidad,
                                                 id,
-                                                año_oscar );
+                                                anio_oscar );
 
 
 CREATE TABLE presentador (
@@ -236,14 +236,14 @@ CREATE TABLE votos (
     nom_post_cat_premio_id                     INTEGER NOT NULL,
     nominacion_postulacion_id_miemb            INTEGER NOT NULL,
     nominacion_postulacion_id                  INTEGER NOT NULL,
-    nominacion_postulacion_año_oscar           INTEGER
+    nominacion_postulacion_anio_oscar           INTEGER
 ,
     postulacion_id_pelicula                    INTEGER NOT NULL,
 
     post_categoria_premio_id                   INTEGER NOT NULL,
     postulacion_id_miembroaacc                 INTEGER NOT NULL,
     postulacion_id                             INTEGER NOT NULL,
-    postulacion_año_oscar                      INTEGER
+    postulacion_anio_oscar                      INTEGER
 ,
     postulacion_doc_identidad1                 INTEGER NOT NULL,
     nom_post_doc_identidad1                    INTEGER NOT NULL,
@@ -258,25 +258,25 @@ ALTER TABLE votos
                                           nom_post_cat_premio_id,
                                           nominacion_postulacion_id_miemb,
                                           nominacion_postulacion_id,
-                                          nominacion_postulacion_año_oscar,
+                                          nominacion_postulacion_anio_oscar,
                                           nom_post_doc_identidad1,
                                           postulacion_id_pelicula,
                                           post_categoria_premio_id,
                                           postulacion_id_miembroaacc,
                                           postulacion_id,
-                                          postulacion_año_oscar,
+                                          postulacion_anio_oscar,
                                           postulacion_doc_identidad1 );
 
 
 CREATE TABLE votos_postular (
-    año                             VARCHAR(28) NOT NULL,
+    anio                             VARCHAR(28) NOT NULL,
     pelicula_postulada_id_pelicula  INTEGER NOT NULL,
     miembro_academia_id_miembro     INTEGER NOT NULL,
     miembro_academia_doc_identidad  INTEGER NOT NULL
 );
 
 ALTER TABLE votos_postular
-    ADD CONSTRAINT votos_postular_pk PRIMARY KEY ( año,
+    ADD CONSTRAINT votos_postular_pk PRIMARY KEY ( anio,
                                                    pelicula_postulada_id_pelicula,
                                                    miembro_academia_id_miembro,
                                                    miembro_academia_doc_identidad );
@@ -310,11 +310,11 @@ ALTER TABLE nominacion
 
 
                                                            postulacion_id,
-                                                           postulacion_año_oscar )
+                                                           postulacion_anio_oscar )
         REFERENCES postulacion (
                                  categoria_premio_id,
                                  id,
-                                 año_oscar );
+                                 anio_oscar );
 
 ALTER TABLE p_m_r
     ADD CONSTRAINT p_m_r_pelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
@@ -371,14 +371,14 @@ ALTER TABLE votos
                                                      nom_post_cat_premio_id,
                                                      --nominacion_postulacion_id_miemb,
                                                      nominacion_postulacion_id,
-                                                     nominacion_postulacion_año_oscar
+                                                     nominacion_postulacion_anio_oscar
                                                       )
         REFERENCES nominacion ( id,
                                 postulacion_id_pelicula,
                                 post_categoria_premio_id,
                                 --postulacion_id_miembroaacc,
                                 postulacion_id,
-                                postulacion_año_oscar
+                                postulacion_anio_oscar
                                -- postulacion_doc_identidad1
                                );
 
@@ -387,13 +387,13 @@ ALTER TABLE votos
                                                       post_categoria_premio_id,
 
                                                       postulacion_id,
-                                                      postulacion_año_oscar )
+                                                      postulacion_anio_oscar )
         REFERENCES postulacion (
                                  categoria_premio_id,
 
 
                                  id,
-                                 año_oscar );
+                                 anio_oscar );
 
 
 ALTER TABLE votos_postular
