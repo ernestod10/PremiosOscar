@@ -68,18 +68,22 @@ CREATE TABLE critica (
     negativa CHAR(1) NOT NULL
 );
 
+
+
+
 ALTER TABLE critica ADD CONSTRAINT critica_pk PRIMARY KEY ( id );
 
 
 CREATE TABLE donacion_organizacion (
     id            serial not null,
-    nombre        VARCHAR(28) NOT NULL,
-    mision        VARCHAR(28) NOT NULL,
+    nombre        VARCHAR(50) NOT NULL,
+    mision        TEXT NOT NULL,
     historico_donacion hist_donacion ARRAY[100]
 
 );
 
 ALTER TABLE donacion_organizacion ADD CONSTRAINT donacion_organizacion_pk PRIMARY KEY ( id );
+
 
 
 CREATE TABLE miembro_academia (
@@ -554,3 +558,61 @@ insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,c
 insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (5,22,2,null);
 insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (6,23,1,null);
 insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (6,24,2,null);
+
+
+insert into critica (id,anio,texto,negativa) values(1,1952,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(2,1952,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(3,1952,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(4,1952,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(5,1952,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(6,1953,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(7,1953,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(8,1953,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(9,1953,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(10,1953,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(11,1954,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(12,1954,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(13,1954,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(14,1954,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(15,1955,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(16,1955,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(17,1955,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(18,1955,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(19,1955,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+
+
+//donacion
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (1,'organizacion delfin','llevar delfines a zonas donde no se encuentren en peligro...' ,ARRAY[(2000,30,2000000)::hist_donacion,(2001,25,2000500)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (2,'United Way Worldwide','mision de...' ,ARRAY[(2000,10,1000000)::hist_donacion,(2002,15,800000)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (3,'Feeding America','mision de...' ,ARRAY[(1999,10,900000)::hist_donacion,(2003,15,800500)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (4,'Direct Relief','mision de...' ,ARRAY[(2000,30,2000000)::hist_donacion,(2001,25,2000500)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (5,'africa water','mision de...' ,ARRAY[(2002,10,1000000)::hist_donacion,(2003,15,800000)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (6,'Salvation Army','mision de...' ,ARRAY[(1999,10,900000)::hist_donacion,(2003,15,800500)::hist_donacion,2004,10,900000)::hist_donacion,(2005,15,800500)::hist_donacion]);
+
+create or replace  function calculo_popularidad_año (year int) returns integer
+as
+$$
+declare
+   porcent integer;
+   popularidad integer;
+begin
+ select (((select count(*) from critica where negativa = 'S' and anio = year)*100)/(select count(*) from critica where anio = year)) as porcentaje into porcent;
+ if porcent > 50 then
+	raise notice 'impopular (1) para el año %', year;
+ 	return 1;
+ elsif porcent <= 50 and porcent > 5 then
+	raise notice 'algo popular (2) para el año %', year;
+	return 2;
+
+elsif porcent <= 5 then
+	raise notice 'muy popular (3) para el año %', year;
+	return 3;
+ end if;
+
+END;
+
+$$
+Language 'plpgsql'
+
+
+
