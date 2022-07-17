@@ -1,4 +1,3 @@
--- Tipo OO
 CREATE TYPE hist_premios AS (
 fechai	DATE,
 fechaf	DATE,
@@ -13,7 +12,7 @@ monto	INTEGER
 );
 
 CREATE TYPE areas AS (
-nombre VARCHAR(28),
+nombre VARCHAR(28)
 );
 
 CREATE TYPE cancion AS(
@@ -26,29 +25,27 @@ compositor VARCHAR(28)
 
 -- Main Script
 CREATE TABLE a_c (
-    categoria_premio_id             INTEGER NOT NULL, 
+    categoria_premio_id             INTEGER NOT NULL,
     miembro_academia_id_miembro     INTEGER NOT NULL,
     miembro_academia_doc_id         INTEGER NOT NULL
 );
 
 ALTER TABLE a_c
     ADD CONSTRAINT a_c_pk PRIMARY KEY ( categoria_premio_id,
-                                        miembro_academia_id_miembroaacc,
-                                        miembro_academia_doc_identidad );
+                                        miembro_academia_id_miembro,
+                                        miembro_academia_doc_id );
 
 CREATE TABLE categoria_premio (
-    id                  INTEGER NOT NULL,
-    nombre              VARCHAR(28) NOT NULL,
+    id                  serial not null,
+    nombre              VARCHAR(50) NOT NULL,
     nivel               INTEGER NOT NULL,
     descripcion         TEXT NOT NULL,
     categoria_premio_id INTEGER,
     historico_premio	hist_premios ARRAY[100]
 );
 
-
-
-
 ALTER TABLE categoria_premio ADD CONSTRAINT categoria_premio_pk PRIMARY KEY ( id );
+
 
 
 CREATE TABLE ceremonia (
@@ -58,27 +55,30 @@ CREATE TABLE ceremonia (
     descripcion           TEXT,
     lugar                 VARCHAR(28) NOT NULL,
     persona_doc_identidad INTEGER NOT NULL
-    
+
 );
 
-ALTER TABLE ceremonia ADD CONSTRAINT ceremonia_pk PRIMARY KEY ( año );
+ALTER TABLE ceremonia ADD CONSTRAINT ceremonia_pk PRIMARY KEY ( anio );
 
 
 CREATE TABLE critica (
-    id       INTEGER NOT NULL,
+    id     serial not null,
     anio  INTEGER NOT NULL,
     texto    TEXT NOT NULL,
     negativa CHAR(1) NOT NULL
 );
 
+
+
+
 ALTER TABLE critica ADD CONSTRAINT critica_pk PRIMARY KEY ( id );
 
 
 CREATE TABLE donacion_organizacion (
-    id            INTEGER NOT NULL,
+    id            serial not null,
     nombre        VARCHAR(28) NOT NULL,
     mision        VARCHAR(28) NOT NULL,
-    historico_donacion hist_donacion ARRAY[]
+    historico_donacion hist_donacion ARRAY[100]
 
 );
 
@@ -86,14 +86,14 @@ ALTER TABLE donacion_organizacion ADD CONSTRAINT donacion_organizacion_pk PRIMAR
 
 
 CREATE TABLE miembro_academia (
-    id_miembroaacc        INTEGER NOT NULL,
+    id_miembroaacc        serial not null,
     fecha_i               DATE NOT NULL,
     fecha_f               DATE,
     vitalicio             VARCHAR(3) NOT NULL,
+    area                  TEXT ARRAY[5]
+,
     persona_doc_identidad INTEGER NOT NULL,
-    area                  areas ARRAY[50],
-    
-    CONSTRAINT Chk_vitalicio CHECK (sexo IN ('SI', 'NO'))
+    CONSTRAINT Chk_vitalicio CHECK (vitalicio IN ('SI', 'NO'))
 );
 
 
@@ -109,9 +109,9 @@ ALTER TABLE miembro_academia ADD CONSTRAINT miembro_academia_pk PRIMARY KEY ( id
 
 
 CREATE TABLE nominacion (
-    id                              INTEGER NOT NULL,
+    id          serial not null,
     ganador                         CHAR(1) NOT NULL,
-    postulacion_id_pelicula         INTEGER NOT NULL, 
+    postulacion_id_pelicula         INTEGER NOT NULL,
 
     post_categoria_premio_id        INTEGER NOT NULL,
     postulacion_id_miembroaacc      INTEGER NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE nominacion (
 ALTER TABLE nominacion
     ADD CONSTRAINT nominacion_pk PRIMARY KEY ( id,
                                                postulacion_id_pelicula,
-                                               postulacion_categoria_premio_id,
+                                               post_categoria_premio_id,
                                                postulacion_id_miembroaacc,
                                                postulacion_id,
                                                postulacion_año_oscar,
@@ -144,20 +144,20 @@ ALTER TABLE p_m_r
 
 
 CREATE TABLE pelicula_postulada (
-    id_pelicula      INTEGER NOT NULL,
-    nombre           VARCHAR(32) NOT NULL,
-    titulo_original  VARCHAR(32) NOT NULL,
-    sinopsis         TEXT NOT NULLL,
+    id_pelicula      serial not null,
+    nombre           VARCHAR(50) NOT NULL,
+    titulo_original  VARCHAR(50) NOT NULL,
+    sinopsis         TEXT NOT NULL,
     anio              INTEGER NOT NULL,
     genero           TEXT ARRAY[4],
     pais             TEXT ARRAY[4],
-    distribuidor     VARCHAR(32) NOT NULL,
+    distribuidor     VARCHAR(50) NOT NULL,
     duracion_min     INTEGER NOT NULL,
     censura          VARCHAR(28) NOT NULL,
     fecha_estreno_la DATE NOT NULL,
     total_nominaciones INTEGER,
     total_Premios    INTEGER,
-    foto             TEXT,	 
+    foto             TEXT
 );
 
 ALTER TABLE pelicula_postulada ADD CONSTRAINT pelicula_postulada_pk PRIMARY KEY ( id_pelicula );
@@ -166,12 +166,12 @@ ALTER TABLE pelicula_postulada ADD CONSTRAINT pelicula_postulada_pk PRIMARY KEY 
 CREATE TABLE persona (
     doc_identidad        INTEGER NOT NULL,
     nombre               VARCHAR(28) NOT NULL,
-    fecha_nacimiento     INTEGER NOT NULL,
+    fecha_nacimiento     DATE NOT NULL,
     apellido             VARCHAR(28) NOT NULL,
     segundo_Nombre       VARCHAR(28),
     segundo_Apellido     VARCHAR(28),
     fecha_defuncion      DATE ,
-    fecha_inicio_carrera DATE, 
+    fecha_inicio_carrera DATE,
     sexo                 VARCHAR(3) NOT NULL,
     CONSTRAINT Chk_sexo CHECK (sexo IN ('M', 'F'))
 
@@ -181,26 +181,24 @@ ALTER TABLE persona ADD CONSTRAINT persona_pk PRIMARY KEY ( doc_identidad );
 
 
 CREATE TABLE postulacion (
-    id                              INTEGER NOT NULL,
-    año_oscar                       INTEGER NOT NULL, 
-,
+    id               serial not null,
+    anio_oscar                       INTEGER NOT NULL,
     pelicula_postulada_id_pelicula  INTEGER NOT NULL,
-    categoria_premio_id             INTEGER NOT NULL, 
+    categoria_premio_id             INTEGER NOT NULL,
 
-    miembro_academia_id_miembroa    INTEGER NOT NULL,
+    --miembro_academia_id_maacc    INTEGER NOT NULL,
     p_m_r_id_pelicula               INTEGER NOT NULL,
     p_m_r_doc_identidad             INTEGER NOT NULL,
-    p_m_r_rol_id                    INTEGER NOT NULL,
-    miembro_academia_doc_identidad  INTEGER NOT NULL
+    p_m_r_rol_id                    INTEGER NOT NULL
+    --miembro_academia_doc_identidad  INTEGER NOT NULL
 );
 
 ALTER TABLE postulacion
-    ADD CONSTRAINT postulacion_pk PRIMARY KEY ( pelicula_postulada_id_pelicula,
-                                                categoria_premio_id,
-                                                miembro_academia_id_miembroaacc,
-                                                miembro_academia_doc_identidad,
+    ADD CONSTRAINT postulacion_pk PRIMARY KEY ( categoria_premio_id,
+                                                --miembro_academia_id_maacc,
+                                                --miembro_academia_doc_identidad,
                                                 id,
-                                                año_oscar );
+                                                anio_oscar );
 
 
 CREATE TABLE presentador (
@@ -210,13 +208,13 @@ CREATE TABLE presentador (
 );
 
 ALTER TABLE presentador
-    ADD CONSTRAINT presentador_pk PRIMARY KEY ( ceremonia_año,
+    ADD CONSTRAINT presentador_pk PRIMARY KEY ( ceremonia_anio,
                                                 categoria_premio_id,
                                                 persona_doc_identidad );
 
 
 CREATE TABLE rol (
-    id          INTEGER NOT NULL,
+    id          serial not null,
     nombre      VARCHAR(28) NOT NULL,
     descripcion TEXT NOT NULL
 );
@@ -228,43 +226,43 @@ ALTER TABLE rol ADD CONSTRAINT rol_pk PRIMARY KEY ( id );
 
 
 CREATE TABLE votos (
-    id                                         INTEGER NOT NULL,
+    id                                         serial not null,
     fecha_hora                                 TIMESTAMP(0) NOT NULL,
     tipo                                       VARCHAR(1) NOT NULL,
 
     miembro_academia_id_miembro                INTEGER NOT NULL,
-    nominacion_id                              INTEGER NOT NULL, 
+    nominacion_id                              INTEGER NOT NULL,
 
-    nominacion_post_id_pelicula                INTEGER NOT NULL, 
-    nom_post_cat_premio_id                     INTEGER NOT NULL, 
+    nominacion_post_id_pelicula                INTEGER NOT NULL,
+    nom_post_cat_premio_id                     INTEGER NOT NULL,
     nominacion_postulacion_id_miemb            INTEGER NOT NULL,
-    nominacion_postulacion_id                  INTEGER NOT NULL, 
+    nominacion_postulacion_id                  INTEGER NOT NULL,
     nominacion_postulacion_año_oscar           INTEGER
 ,
-    postulacion_id_pelicula                    INTEGER NOT NULL, 
+    postulacion_id_pelicula                    INTEGER NOT NULL,
 
     post_categoria_premio_id                   INTEGER NOT NULL,
     postulacion_id_miembroaacc                 INTEGER NOT NULL,
     postulacion_id                             INTEGER NOT NULL,
     postulacion_año_oscar                      INTEGER
 ,
-    postulacion_doc_identidad1                 INTEGER NOT NULL, 
+    postulacion_doc_identidad1                 INTEGER NOT NULL,
     nom_post_doc_identidad1                    INTEGER NOT NULL,
     miembro_academia_doc_identidad             INTEGER NOT NULL
 );
 
 ALTER TABLE votos
-    ADD CONSTRAINT votos_pk PRIMARY KEY ( miembro_academia_id_miembroaacc,
+    ADD CONSTRAINT votos_pk PRIMARY KEY ( miembro_academia_id_miembro,
                                           id,
                                           nominacion_id,
-                                          nominacion_postulacion_id_pelicula,
-                                          nominacion_postulacion_categoria_premio_id,
-                                          nominacion_postulacion_id_miembroaacc,
+                                          nominacion_post_id_pelicula,
+                                          nom_post_cat_premio_id,
+                                          nominacion_postulacion_id_miemb,
                                           nominacion_postulacion_id,
                                           nominacion_postulacion_año_oscar,
-                                          nominacion_postulacion_doc_identidad1,
+                                          nom_post_doc_identidad1,
                                           postulacion_id_pelicula,
-                                          postulacion_categoria_premio_id,
+                                          post_categoria_premio_id,
                                           postulacion_id_miembroaacc,
                                           postulacion_id,
                                           postulacion_año_oscar,
@@ -272,16 +270,16 @@ ALTER TABLE votos
 
 
 CREATE TABLE votos_postular (
-    año                             VARCHAR(28) NOT NULL,
-    pelicula_postulada_id_pelicula  INTEGER NOT NULL, 
+    anio                             VARCHAR(28) NOT NULL,
+    pelicula_postulada_id_pelicula  INTEGER NOT NULL,
     miembro_academia_id_miembro     INTEGER NOT NULL,
     miembro_academia_doc_identidad  INTEGER NOT NULL
 );
 
 ALTER TABLE votos_postular
-    ADD CONSTRAINT votos_postular_pk PRIMARY KEY ( año,
+    ADD CONSTRAINT votos_postular_pk PRIMARY KEY ( anio,
                                                    pelicula_postulada_id_pelicula,
-                                                   miembro_academia_id_miembroaacc,
+                                                   miembro_academia_id_miembro,
                                                    miembro_academia_doc_identidad );
 
 ALTER TABLE a_c
@@ -289,8 +287,8 @@ ALTER TABLE a_c
         REFERENCES categoria_premio ( id );
 
 ALTER TABLE a_c
-    ADD CONSTRAINT a_c_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
-                                                         miembro_academia_doc_identidad )
+    ADD CONSTRAINT a_c_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
+                                                         miembro_academia_doc_id )
         REFERENCES miembro_academia ( id_miembroaacc,
                                       persona_doc_identidad );
 
@@ -308,18 +306,16 @@ ALTER TABLE miembro_academia
         REFERENCES persona ( doc_identidad );
 
 ALTER TABLE nominacion
-    ADD CONSTRAINT nominacion_postulacion_fk FOREIGN KEY ( postulacion_id_pelicula,
-                                                           postulacion_categoria_premio_id,
-                                                           postulacion_id_miembroaacc,
-                                                           postulacion_doc_identidad1,
+    ADD CONSTRAINT nominacion_postulacion_fk FOREIGN KEY (
+                                                           post_categoria_premio_id,
+
+
                                                            postulacion_id,
                                                            postulacion_año_oscar )
-        REFERENCES postulacion ( pelicula_postulada_id_pelicula,
+        REFERENCES postulacion (
                                  categoria_premio_id,
-                                 miembro_academia_id_miembroaacc,
-                                 miembro_academia_doc_identidad,
                                  id,
-                                 año_oscar );
+                                 anio_oscar );
 
 ALTER TABLE p_m_r
     ADD CONSTRAINT p_m_r_pelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
@@ -337,11 +333,7 @@ ALTER TABLE postulacion
     ADD CONSTRAINT post_categoria_premio_fk FOREIGN KEY ( categoria_premio_id )
         REFERENCES categoria_premio ( id );
 
-ALTER TABLE postulacion
-    ADD CONSTRAINT post_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
-                                                                 miembro_academia_doc_identidad )
-        REFERENCES miembro_academia ( id_miembroaacc,
-                                      persona_doc_identidad );
+
 
 ALTER TABLE postulacion
     ADD CONSTRAINT postulacion_p_m_r_fk FOREIGN KEY ( p_m_r_id_pelicula,
@@ -361,52 +353,51 @@ ALTER TABLE presentador
         REFERENCES categoria_premio ( id );
 
 ALTER TABLE presentador
-    ADD CONSTRAINT presentador_ceremonia_fk FOREIGN KEY ( ceremonia_año )
-        REFERENCES ceremonia ( año );
+    ADD CONSTRAINT presentador_ceremonia_fk FOREIGN KEY ( ceremonia_anio )
+        REFERENCES ceremonia ( anio );
 
 ALTER TABLE presentador
     ADD CONSTRAINT presentador_persona_fk FOREIGN KEY ( persona_doc_identidad )
         REFERENCES persona ( doc_identidad );
 
 ALTER TABLE votos
-    ADD CONSTRAINT votos_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
+    ADD CONSTRAINT votos_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
                                                            miembro_academia_doc_identidad )
         REFERENCES miembro_academia ( id_miembroaacc,
                                       persona_doc_identidad );
 
 ALTER TABLE votos
     ADD CONSTRAINT votos_nominacion_fk FOREIGN KEY ( nominacion_id,
-                                                     nominacion_postulacion_id_pelicula,
-                                                     nominacion_postulacion_categoria_premio_id,
-                                                     nominacion_postulacion_id_miembroaacc,
+                                                     nominacion_post_id_pelicula,
+                                                     nom_post_cat_premio_id,
+                                                     nominacion_postulacion_id_miemb,
                                                      nominacion_postulacion_id,
                                                      nominacion_postulacion_año_oscar,
-                                                     nominacion_postulacion_doc_identidad1 )
+                                                     nom_post_doc_identidad1 )
         REFERENCES nominacion ( id,
                                 postulacion_id_pelicula,
-                                postulacion_categoria_premio_id,
+                                post_categoria_premio_id,
                                 postulacion_id_miembroaacc,
                                 postulacion_id,
                                 postulacion_año_oscar,
                                 postulacion_doc_identidad1 );
 
 ALTER TABLE votos
-    ADD CONSTRAINT votos_postulacion_fk FOREIGN KEY ( postulacion_id_pelicula,
-                                                      postulacion_categoria_premio_id,
-                                                      postulacion_id_miembroaacc,
-                                                      postulacion_doc_identidad1,
+    ADD CONSTRAINT votos_postulacion_fk FOREIGN KEY (
+                                                      post_categoria_premio_id,
+
                                                       postulacion_id,
                                                       postulacion_año_oscar )
-        REFERENCES postulacion ( pelicula_postulada_id_pelicula,
+        REFERENCES postulacion (
                                  categoria_premio_id,
-                                 miembro_academia_id_miembroaacc,
-                                 miembro_academia_doc_identidad,
+
+
                                  id,
-                                 año_oscar );
+                                 anio_oscar );
 
 
 ALTER TABLE votos_postular
-    ADD CONSTRAINT VPmiembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembroaacc,
+    ADD CONSTRAINT VPmiembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
                                                                     miembro_academia_doc_identidad )
         REFERENCES miembro_academia ( id_miembroaacc,
                                       persona_doc_identidad );
@@ -415,29 +406,9 @@ ALTER TABLE votos_postular
 ALTER TABLE votos_postular
     ADD CONSTRAINT VPpelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
         REFERENCES pelicula_postulada ( id_pelicula );
-
---Triggers
-
-
-
-
-
--- Procedures
-
-
-
-
-
---Roles (seguridad)
-
-
-
-
-
-
---Inserts
-
-//personas
+        
+        
+        
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (1, 'Emelen', '1990-01-18', 'Frickey', 'Haley', 'McDougall', null, '2013-10-06', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (2, 'Neville', '1980-03-06', 'Hanford', 'Byron', 'Raccio', null, '2000-12-25', 'M');
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (3, 'Dwain', '1981-05-09', 'Domenc', 'Solly', 'Lugton', '2013-11-15', '1999-05-23', 'M');
@@ -490,21 +461,21 @@ insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_
 insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (50, 'Benjie', '1989-12-06', 'Hutcheon', 'Euell', 'Sture', null, '2009-10-29', 'M');
 
 
-//peliculas
+
 insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (1, 'Sonic', 'Sonic', 'Morbi non lectus. Aliquam sit amet diam in magna bibendum imperdiet. Nullam orci pede, venenatis non, sodales sed, tincidunt eu, felis.', 2020, ARRAY[('comedia'),('accion'),('ciencia ficcion')], ARRAY[('Japon'),('Estados Unidos'),('Canada')], 'Paramount Pictures', 83, 'A', '2020-02-14', null, null, 'https://drive.google.com/file/d/1NGXDafkb4fzlYep6RHnalTReV76sUJB8/view?usp=sharing');
 insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (2, '1917', '1917', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 2019, ARRAY[('accion'),('drama'),('belica')], ARRAY[('Reino unido')], 'Universal Pictures', 119, 'C', '2019-12-04', null, null, 'https://drive.google.com/file/d/1zslefXkZdTGXO8i7a6TbnS3V7q-c91HA/view?usp=sharing');
 insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (3, 'el renacido', 'the revenant', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 2015, ARRAY[('accion'),('drama'),('western')], ARRAY[('Estados Unidos')], '20th Century Fox', 156, 'C', '2015-12-25', null, null, 'https://drive.google.com/file/d/17_e5oXc9VfFPU1QrLU3Hhb-pmFglayCT/view?usp=sharing');
 insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (4, 'erase una vez en hollywood', 'once upon a time in hollywood', 'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 2019, ARRAY[('comedia'),('crimenes'),('ucronia')], ARRAY[('Estados Unidos')], 'Sony Pictures', 160, 'C', '2019-05-21', null, null, 'https://drive.google.com/file/d/1E5KZH8cuet4nZjAFylBPxnymbA_yLh14/view?usp=sharing');
-insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (5, 'el joker', 'Joker', 'In congue. Etiam justo. Etiam pretium iaculis justo.In hac habitasse platea dictumst. Etiam faucibus cursus urna. Ut tellus.', 2019, ARRAY[('drama'),('suspenso'),('crimen'),('tragedia')], ARRAY[('Estados Unidoas')], 'Warner Bros. Pictures, 122, 'B', '2019-08-31', null, null, 'http://dummyimage.com/225x100.png/5fa2dd/ffffff');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (5, 'el joker', 'Joker', 'In congue. Etiam justo. Etiam pretium iaculis justo.In hac habitasse platea dictumst. Etiam faucibus cursus urna. Ut tellus.', 2019, ARRAY[('drama'),('suspenso'),('crimen'),('tragedia')], ARRAY[('Estados Unidoas')], 'Warner Bros. Pictures', 122, 'B', '2019-08-31', null, null, 'http://dummyimage.com/225x100.png/5fa2dd/ffffff');
 insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (6, 'La La Land', 'La La Land', 'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 2016,  ARRAY[('drama'),('romance'),('musical')],  ARRAY[('Estados Unidos'),('Hong Kong')], 'Lionsgate', 128, 'B', '2017-01-13', null, null, 'https://drive.google.com/file/d/12nLJ_IBvDtIqSgqxRY2Omjk2VJI-Iiic/view?usp=sharing');
-insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (7, 'soul', 'soul', 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem.', 2020, ARRAY[('animacion'),('comedia'),('drama'),('musica')] , ARRAY[('Estados Unidos')], 'Walt Disney Studios Motion Pictures', 100, 'A', '2020-12-25', null, null, 'https://drive.google.com/file/d/1hXUNf_3W6ZQZEo3_G5Ckve3DRngTtpT0/view?usp=sharing';
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (7, 'soul', 'soul', 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem.', 2020, ARRAY[('animacion'),('comedia'),('drama'),('musica')] , ARRAY[('Estados Unidos')], 'Walt Disney Studios Motion Pictures', 100, 'A', '2020-12-25', null, null, 'https://drive.google.com/file/d/1hXUNf_3W6ZQZEo3_G5Ckve3DRngTtpT0/view?usp=sharing');
 insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (8, 'el irlandes', 'the irishman', 'Sed ante. Vivamus tortor. Duis mattis egestas metus.', 2019, ARRAY[('gansteres'),('epica')],ARRAY[('drama'),('Estados Unidos')], 'Netflix', 209, 'B', '2019-11-01', null, null, 'https://drive.google.com/file/d/14sZLd8FPsLaqalcQsJBueEQI7LwNZ1oq/view?usp=sharing');
 insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (9, 'Mank', 'Mank', 'Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti.', 2020,ARRAY[('Drama')] , ARRAY[('Estados Unidos')],'Netflix', 131, 'B', '2020-12-4', null, null, 'https://drive.google.com/file/d/1rtT_lGtOpqHLGJ9LUq36TUsi6KdAsjqu/view?usp=sharing');
-insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (10, 'Nomasland', 'Nomasland', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2020, ARRAY[('drama')]', ARRAY[('Estados Unidos')], 'Searchlight Pictures' 108, 'B', '2020-09-11', null, null, 'https://drive.google.com/file/d/1PR3rogbAEG4QbtX-ertQjdbL1ppzu0H-/view?usp=sharing');
-insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (11, 'Sonido del metal', 'Sound of metal', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2020, ARRAY[('drama')]', ARRAY[('Estados Unidos')], 'Amazon Studios' 120, 'B', '2020-12-4', null, null, 'https://drive.google.com/file/d/1Eog4F1RL0-U-K7dUCQBw9KwAWLYJBFqg/view?usp=sharing');
-insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (12, 'Otra ronda', 'Drunk', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2020, ARRAY[('comedia')]', ARRAY[('Estados Unidos')], 'Nordisk Film' 115, 'B', '2020-09-12', null, null, 'https://drive.google.com/file/d/1Z_ra11gevh9X7CGgJ7_L0n1syRwu2tKE/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (10, 'Nomasland', 'Nomasland', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2020, ARRAY[('drama')], ARRAY[('Estados Unidos')], 'Searchlight Pictures', 108, 'B', '2020-09-11', null, null, 'https://drive.google.com/file/d/1PR3rogbAEG4QbtX-ertQjdbL1ppzu0H-/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (11, 'Sonido del metal', 'Sound of metal', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2020, ARRAY[('drama')], ARRAY[('Estados Unidos')], 'Amazon Studios' ,120, 'B', '2020-12-4', null, null, 'https://drive.google.com/file/d/1Eog4F1RL0-U-K7dUCQBw9KwAWLYJBFqg/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (12, 'Otra ronda', 'Drunk', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2020, ARRAY[('comedia')], ARRAY[('Estados Unidos')], 'Nordisk Film' ,115, 'B', '2020-09-12', null, null, 'https://drive.google.com/file/d/1Z_ra11gevh9X7CGgJ7_L0n1syRwu2tKE/view?usp=sharing');
 
-//rol
+
 insert into rol (id, nombre, descripcion) values (1,'actor','persona que interpreta un personaje en una obra de teatro, una telenovela o una película de cine');
 insert into rol (id, nombre, descripcion) values (2,'director','persona que dirige la filmación de una película');
 insert into rol (id, nombre, descripcion) values (3,'escritor','persona que se dedica a escribir obras literarias');
@@ -514,23 +485,23 @@ insert into rol (id, nombre, descripcion) values (6,'estilista','Las estilistas 
 insert into rol (id, nombre, descripcion) values (7,'animadores','animador crea animaciones y efectos visuales para televisión, películas, videojuegos y otros medios.');
 insert into rol (id, nombre, descripcion) values (8,'vestuario','encargado de vestimenta a usar por un sujeto.');
 
-//miebro de academia
-
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (1,'2018-01-1',null,'NO',1,ARRAY[('actor')::areas,('director')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (2,'2015-02-1',null,'SI',2,ARRAY[('actor')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (3,'2003-02-1',null,'NO',3,ARRAY[('compositor')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (4,'2015-03-1',null,'SI',4,ARRAY[('actor')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (5,'2000-11-1',null,'SI',5,ARRAY[('actor')::areas,('director')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (6,'2004-09-1',null,'NO',6,ARRAY[('escritor')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (7,'1990-01-1',null,'NO',7,ARRAY[('director')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (8,'1991-12-1',null,'SI',8,ARRAY[('vestuario')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (9,'2015-12-1',null,'SI',9,ARRAY[('maquillaje')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (10,'2010-12-1',null,'NO',10,ARRAY[('estilista')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (11,'2008-12-1',null,'NO',11,ARRAY[('actor')::areas]);
-insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (12,'2008-12-1',null,'NO',12,ARRAY[('actor')::areas]);
 
 
-//categoria_premio
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (1,'2018-01-1',null,'NO',1,ARRAY[('actor'),('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (2,'2015-02-1',null,'SI',2,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (3,'2003-02-1',null,'NO',3,ARRAY[('compositor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (4,'2015-03-1',null,'SI',4,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (5,'2000-11-1',null,'SI',5,ARRAY[('actor'),('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (6,'2004-09-1',null,'NO',6,ARRAY[('escritor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (7,'1990-01-1',null,'NO',7,ARRAY[('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (8,'1991-12-1',null,'SI',8,ARRAY[('vestuario')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (9,'2015-12-1',null,'SI',9,ARRAY[('maquillaje')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (10,'2010-12-1',null,'NO',10,ARRAY[('estilista')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (11,'2008-12-1',null,'NO',11,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (12,'2008-12-1',null,'NO',12,ARRAY[('actor')]);
+
+
+
 
 insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (1,'largometrajes',1,'categoria dirigida a los largometrajes',null,ARRAY[(null,null,null,null)::hist_premios]);
 insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (2,'direccion',1,'categoria dirigida a los directores',null,ARRAY[(null,null,null,null)::hist_premios]);
@@ -571,4 +542,69 @@ insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,hi
 insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (37,'mejor edicion de sonido',2,'premio mejor edicion de sonido',6,ARRAY[(null,null,null,null)::hist_premios]);
 insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (38,'mejor maquillaje',2,'premio mejor maquillaje',12,ARRAY[(null,null,null,null)::hist_premios]);
 insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (39,'mejor pelicula de animacion',2,'premio mejor pelicula de animacion',10,ARRAY[(null,null,null,null)::hist_premios]);
+
+
+
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (1,13,1,null); 
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (1,14,2,null); 
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (2,15,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (2,16,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (3,17,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (3,18,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (4,19,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (4,20,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (5,21,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (5,22,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (6,23,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (6,24,2,null);
+
+
+insert into critica (id,anio,texto,negativa) values(1,1952,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(2,1952,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(3,1952,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(4,1952,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(5,1952,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(6,1953,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(7,1953,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(8,1953,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(9,1953,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(10,1953,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(11,1954,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(12,1954,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(13,1954,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(14,1954,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(15,1955,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(16,1955,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(17,1955,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(18,1955,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(19,1955,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+
+
+//programa popularidad
+create or replace  function calculo_popularidad_año (year int) returns integer
+as
+$$
+declare
+   porcent integer;
+   popularidad integer;
+begin
+ select (((select count(*) from critica where negativa = 'S' and anio = year)*100)/(select count(*) from critica where anio = year)) as porcentaje into porcent;
+ if porcent > 50 then
+	raise notice 'impopular (1) para el año %', year;
+ 	return 1;
+ elsif porcent <= 50 and porcent > 5 then
+	raise notice 'algo popular (2) para el año %', year;
+	return 2;
+
+elsif porcent <= 5 then
+	raise notice 'muy popular (3) para el año %', year;
+	return 3;
+ end if;
+
+END;
+
+$$
+Language 'plpgsql'
+
+
 
