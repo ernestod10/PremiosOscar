@@ -113,20 +113,20 @@ CREATE TABLE nominacion (
     postulacion_id_pelicula         INTEGER NOT NULL,
 
     post_categoria_premio_id        INTEGER NOT NULL,
-    postulacion_id_miembroaacc      INTEGER NOT NULL,
+    --postulacion_id_miembroaacc      INTEGER NOT NULL,
     postulacion_id                  INTEGER NOT NULL,
-    postulacion_año_oscar           INTEGER NOT NULL,
-    postulacion_doc_identidad1      INTEGER NOT NULL
+    postulacion_año_oscar           INTEGER NOT NULL
+    --postulacion_doc_identidad1      INTEGER NOT NULL
 );
 
 ALTER TABLE nominacion
     ADD CONSTRAINT nominacion_pk PRIMARY KEY ( id,
                                                postulacion_id_pelicula,
                                                post_categoria_premio_id,
-                                               postulacion_id_miembroaacc,
+
                                                postulacion_id,
-                                               postulacion_año_oscar,
-                                               postulacion_doc_identidad1 );
+                                               postulacion_año_oscar
+                                                );
 
 
 CREATE TABLE p_m_r (
@@ -369,17 +369,18 @@ ALTER TABLE votos
     ADD CONSTRAINT votos_nominacion_fk FOREIGN KEY ( nominacion_id,
                                                      nominacion_post_id_pelicula,
                                                      nom_post_cat_premio_id,
-                                                     nominacion_postulacion_id_miemb,
+                                                     --nominacion_postulacion_id_miemb,
                                                      nominacion_postulacion_id,
-                                                     nominacion_postulacion_año_oscar,
-                                                     nom_post_doc_identidad1 )
+                                                     nominacion_postulacion_año_oscar
+                                                      )
         REFERENCES nominacion ( id,
                                 postulacion_id_pelicula,
                                 post_categoria_premio_id,
-                                postulacion_id_miembroaacc,
+                                --postulacion_id_miembroaacc,
                                 postulacion_id,
-                                postulacion_año_oscar,
-                                postulacion_doc_identidad1 );
+                                postulacion_año_oscar
+                               -- postulacion_doc_identidad1
+                               );
 
 ALTER TABLE votos
     ADD CONSTRAINT votos_postulacion_fk FOREIGN KEY (
