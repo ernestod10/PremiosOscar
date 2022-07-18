@@ -589,6 +589,45 @@ insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (
 insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (5,'africa water','mision de...' ,ARRAY[(2002,10,1000000)::hist_donacion,(2003,15,800000)::hist_donacion]);
 insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (6,'Salvation Army','mision de...' ,ARRAY[(1999,10,900000)::hist_donacion,(2003,15,800500)::hist_donacion,2004,10,900000)::hist_donacion,(2005,15,800500)::hist_donacion]);
 
+
+//a_c
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (25,3,3);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (26,3,3);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (20,6,6);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (32,6,6);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,7,7);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (35,8,8);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (38,9,9);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (38,10,10);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,12,12);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,12,12);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,12,12);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,12,12);
+
+
+
 create or replace  function calculo_popularidad_año (year int) returns integer
 as
 $$
