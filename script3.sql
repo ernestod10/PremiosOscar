@@ -89,7 +89,7 @@ CREATE TABLE miembro_academia (
     fecha_i               DATE NOT NULL,
     fecha_f               DATE,
     vitalicio             VARCHAR(3) NOT NULL,
-    area                  areas[]
+    area                  TEXT ARRAY[]
 ,
     persona_doc_identidad INTEGER NOT NULL,
     CONSTRAINT Chk_vitalicio CHECK (vitalicio IN ('SI', 'NO'))
@@ -406,3 +406,4 @@ ALTER TABLE votos_postular
 ALTER TABLE votos_postular
     ADD CONSTRAINT VPpelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
         REFERENCES pelicula_postulada ( id_pelicula );
+
