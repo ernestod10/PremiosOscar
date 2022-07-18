@@ -78,9 +78,9 @@ AS $$
                                           order by count(v.postulacion_id)
                                           desc limit limite)
             LOOP
-            insert into nominacion (ganador, postulacion_id_pelicula, post_categoria_premio_id, postulacion_id_miembroaacc, postulacion_id, postulacion_año_oscar, postulacion_doc_identidad)
+            insert into nominacion (ganador, post_categoria_premio_id, postulacion_id_miembroaacc, postulacion_id, postulacion_año_oscar, postulacion_doc_identidad)
 
-            VALUES (FALSE,(select pelicula_postulada_id_pelicula from postulacion where id = id_post), id_cat,(select miembro_academia_id_maacc from postulacion where postulacion.id = id_post),id_post,year,(select miembro_academia_doc_identidad from postulacion where postulacion.id = id_post));
+            VALUES (FALSE, id_cat,(select miembro_academia_id_maacc from postulacion where postulacion.id = id_post),id_post,year,(select miembro_academia_doc_identidad from postulacion where postulacion.id = id_post));
             update pelicula_postulada  set total_nominaciones = total_nominaciones+1 where id_pelicula = (select pelicula_postulada_id_pelicula from postulacion where id = id_post);
         END LOOP;
     END LOOP;
@@ -92,17 +92,18 @@ language plpgsql;
 Create or replace PROCEDURE votos_ganador (year Integer )
 AS $$
     DECLARE
-    id_post Integer;
+    id_nom Integer;
     id_cat integer;
 
     BEGIN
     FOR id_cat in (select id from categoria_premio where nivel = 2)LOOP
-        For id_post in (select n.postulacion_id from nominacion n inner join votos v on n.id = v.postulacion_id where  post_categoria_premio_id = id_cat and v.tipo = ('g') and n.postulacion_año_oscar = year
+        For id_nom in (select n.id from nominacion n inner join votos v on n.id = v.nominacion_id where  post_categoria_premio_id = id_cat and v.tipo = ('g') and n.postulacion_año_oscar = year
                                           group by n.id
-                                          order by count(v.postulacion_id)
+                                          order by count(v.nominacion_id)
                                           desc limit 1)
             LOOP
-            update nominacion set ganador = True where postulacion_id = id_post;
+            update nominacion set ganador = True where id = id_nom;
+            update pelicula_postulada  set total_premios = total_premios+1 where id_pelicula = (select pelicula_postulada_id_pelicula from postulacion where id = (select postulacion_id from nominacion  ) ) or id_pelicula =(select p_m_r_id_pelicula from postulacion);
 
 
 
@@ -124,10 +125,21 @@ CREATE VIEW pelicula_postulada_votos_postular AS
 
 
 --Roles (seguridad)
+--cuenta de administrador
 
+
+
+
+
+--Cuentas de usuario final
 Create role Miembro_Academia;
 grant Miembro_Academia select on pelicula_postulada_votos_postular;
+grant miembro_academia insert on voto;
+grant miembro_academia insert on postulacion;
 
+create role Administrador_academia;
+grant Administrador_academia execute on votos_nominacion;
+grant Administrador_academia execute on votos_ganador;
 
 
 
