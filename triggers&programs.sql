@@ -130,6 +130,37 @@ end;$$ language plpgsql;
 
 
 
+-- programa critica
+
+create or replace  function calculo_popularidad_año (year int) returns integer
+as
+$$
+declare
+   porcent integer;
+   popularidad integer;
+begin
+ select (((select count(*) from critica where negativa = 'S' and anio = year)*100)/(select count(*) from critica where anio = year)) as porcentaje into porcent;
+ if porcent > 50 then
+	raise notice 'impopular (1) para el año %', year;
+ 	return 1;
+ elsif porcent <= 50 and porcent > 5 then
+	raise notice 'algo popular (2) para el año %', year;
+	return 2;
+
+elsif porcent <= 5 then
+	raise notice 'muy popular (3) para el año %', year;
+	return 3;
+ end if;
+
+END;
+
+$$
+Language 'plpgsql'
+
+
+
+
+
 -- Vistas
 -- create vew for pelicula_postulada joined with votos_postular
 
