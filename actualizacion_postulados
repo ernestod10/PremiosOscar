@@ -1,0 +1,931 @@
+CREATE TYPE hist_premios AS (
+fechai	DATE,
+fechaf	DATE,
+nombre	VARCHAR(28),
+cant_nominaciones  INTEGER
+);
+
+CREATE TYPE hist_donacion AS (
+anio	INTEGER,
+porcentaje	INTEGER,
+monto	INTEGER
+);
+
+CREATE TYPE areas AS (
+nombre VARCHAR(28)
+);
+
+CREATE TYPE cancion AS(
+nombre VARCHAR(28),
+anio INTEGER,
+compositor VARCHAR(28)
+);
+
+
+
+-- Main Script
+CREATE TABLE a_c (
+    categoria_premio_id             INTEGER NOT NULL,
+    miembro_academia_id_miembro     INTEGER NOT NULL,
+    miembro_academia_doc_id         INTEGER NOT NULL
+);
+
+ALTER TABLE a_c
+    ADD CONSTRAINT a_c_pk PRIMARY KEY ( categoria_premio_id,
+                                        miembro_academia_id_miembro,
+                                        miembro_academia_doc_id );
+
+CREATE TABLE categoria_premio (
+    id                  serial not null,
+    nombre              VARCHAR(50) NOT NULL,
+    nivel               INTEGER NOT NULL,
+    descripcion         TEXT NOT NULL,
+    categoria_premio_id INTEGER,
+    historico_premio	hist_premios ARRAY[100]
+);
+
+ALTER TABLE categoria_premio ADD CONSTRAINT categoria_premio_pk PRIMARY KEY ( id );
+
+
+
+CREATE TABLE ceremonia (
+    anio                   INTEGER NOT NULL,
+    numero_edicion        INTEGER NOT NULL,
+    fecha                 DATE NOT NULL,
+    descripcion           TEXT,
+    lugar                 VARCHAR(28) NOT NULL,
+    persona_doc_identidad INTEGER NOT NULL
+
+);
+
+ALTER TABLE ceremonia ADD CONSTRAINT ceremonia_pk PRIMARY KEY ( anio );
+
+
+CREATE TABLE critica (
+    id     serial not null,
+    anio  INTEGER NOT NULL,
+    texto    TEXT NOT NULL,
+    negativa CHAR(1) NOT NULL
+);
+
+
+
+
+ALTER TABLE critica ADD CONSTRAINT critica_pk PRIMARY KEY ( id );
+
+
+CREATE TABLE donacion_organizacion (
+    id            serial not null,
+    nombre        VARCHAR(50) NOT NULL,
+    mision        TEXT NOT NULL,
+    historico_donacion hist_donacion ARRAY[100]
+
+);
+
+ALTER TABLE donacion_organizacion ADD CONSTRAINT donacion_organizacion_pk PRIMARY KEY ( id );
+
+
+
+CREATE TABLE miembro_academia (
+    id_miembroaacc        serial not null,
+    fecha_i               DATE NOT NULL,
+    fecha_f               DATE,
+    vitalicio             VARCHAR(3) NOT NULL,
+    area                  TEXT ARRAY[5]
+,
+    persona_doc_identidad INTEGER NOT NULL,
+    CONSTRAINT Chk_vitalicio CHECK (vitalicio IN ('SI', 'NO'))
+);
+
+
+
+
+CREATE UNIQUE INDEX miembro_academia__idx ON
+    miembro_academia (
+        persona_doc_identidad
+    ASC );
+
+ALTER TABLE miembro_academia ADD CONSTRAINT miembro_academia_pk PRIMARY KEY ( id_miembroaacc,
+                                                                              persona_doc_identidad );
+
+
+CREATE TABLE nominacion (
+    id          serial not null,
+    ganador                         CHAR(1) NOT NULL,
+
+    post_categoria_premio_id        INTEGER NOT NULL,
+    postulacion_id_miembroaacc      INTEGER NOT NULL,
+    postulacion_id                  INTEGER NOT NULL,
+    postulacion_año_oscar           INTEGER NOT NULL,
+    postulacion_doc_identidad     INTEGER NOT NULL
+);
+
+ALTER TABLE nominacion
+    ADD CONSTRAINT nominacion_pk PRIMARY KEY ( id,
+
+                                               post_categoria_premio_id,
+                                               postulacion_id_miembroaacc,
+                                               postulacion_id,
+                                               postulacion_año_oscar,
+                                               postulacion_doc_identidad );
+
+
+CREATE TABLE p_m_r (
+    pelicula_postulada_id_pelicula INTEGER NOT NULL,
+    persona_doc_identidad          INTEGER NOT NULL,
+    rol_id                         INTEGER NOT NULL,
+    cancion_p_m_r 			   cancion
+);
+
+ALTER TABLE p_m_r
+    ADD CONSTRAINT p_m_r_pk PRIMARY KEY ( pelicula_postulada_id_pelicula,
+                                          persona_doc_identidad,
+                                          rol_id );
+
+
+CREATE TABLE pelicula_postulada (
+    id_pelicula      serial not null,
+    nombre           VARCHAR(50) NOT NULL,
+    titulo_original  VARCHAR(50) NOT NULL,
+    sinopsis         TEXT NOT NULL,
+    anio              INTEGER NOT NULL,
+    genero           TEXT ARRAY[4],
+    pais             TEXT ARRAY[4],
+    distribuidor     VARCHAR(50) NOT NULL,
+    duracion_min     INTEGER NOT NULL,
+    censura          VARCHAR(28) NOT NULL,
+    fecha_estreno_la DATE NOT NULL,
+    total_nominaciones INTEGER,
+    total_Premios    INTEGER,
+    foto             TEXT
+);
+
+ALTER TABLE pelicula_postulada ADD CONSTRAINT pelicula_postulada_pk PRIMARY KEY ( id_pelicula );
+
+
+CREATE TABLE persona (
+    doc_identidad        INTEGER NOT NULL,
+    nombre               VARCHAR(28) NOT NULL,
+    fecha_nacimiento     DATE NOT NULL,
+    apellido             VARCHAR(28) NOT NULL,
+    segundo_Nombre       VARCHAR(28),
+    segundo_Apellido     VARCHAR(28),
+    fecha_defuncion      DATE ,
+    fecha_inicio_carrera DATE,
+    sexo                 VARCHAR(3) NOT NULL,
+    CONSTRAINT Chk_sexo CHECK (sexo IN ('M', 'F'))
+
+);
+
+ALTER TABLE persona ADD CONSTRAINT persona_pk PRIMARY KEY ( doc_identidad );
+
+
+CREATE TABLE postulacion (
+    id                              serial not null,
+    anio_oscar                       INTEGER NOT NULL,
+    pelicula_postulada_id_pelicula  INTEGER ,
+    categoria_premio_id             INTEGER NOT NULL,
+
+    miembro_academia_id_maacc       INTEGER NOT NULL,
+    p_m_r_id_pelicula               INTEGER ,
+    p_m_r_doc_identidad             INTEGER ,
+    p_m_r_rol_id                    INTEGER ,
+    miembro_academia_doc_identidad  INTEGER NOT NULL
+);
+
+ALTER TABLE postulacion
+    ADD CONSTRAINT postulacion_pk PRIMARY KEY ( categoria_premio_id,
+                                                miembro_academia_id_maacc,
+                                                miembro_academia_doc_identidad,
+                                                id,
+                                                anio_oscar );
+Alter table postulacion 
+    add CONSTRAINT arco_postulacion check (((pelicula_postulada_id_pelicula is null) and (p_m_r_id_pelicula is not null) and (p_m_r_doc_identidad is not null) and (p_m_r_rol_id is not null))
+    or ((pelicula_postulada_id_pelicula is not null) and (p_m_r_id_pelicula is null) and (p_m_r_doc_identidad is null) and (p_m_r_rol_id is null)));
+
+CREATE TABLE presentador (
+    ceremonia_anio         INTEGER NOT NULL,
+    categoria_premio_id   INTEGER NOT NULL,
+    persona_doc_identidad INTEGER NOT NULL
+);
+
+ALTER TABLE presentador
+    ADD CONSTRAINT presentador_pk PRIMARY KEY ( ceremonia_anio,
+                                                categoria_premio_id,
+                                                persona_doc_identidad );
+
+
+CREATE TABLE rol (
+    id          serial not null,
+    nombre      VARCHAR(28) NOT NULL,
+    descripcion TEXT NOT NULL
+);
+
+
+
+
+ALTER TABLE rol ADD CONSTRAINT rol_pk PRIMARY KEY ( id );
+
+
+CREATE TABLE votos (
+    id                                         serial not null,
+    fecha_hora                                 TIMESTAMP(0) NOT NULL,
+    tipo                                       VARCHAR(1) NOT NULL,
+    miembro_academia_doc_identidad             INTEGER NOT NULL,
+    miembro_academia_id_miembro                INTEGER NOT NULL,
+
+    nominacion_id                              INTEGER ,
+   
+    nom_post_cat_premio_id                     INTEGER ,
+    nominacion_postulacion_id_miemb            INTEGER ,
+    nominacion_postulacion_id                  INTEGER ,
+    nominacion_postulacion_año_oscar           INTEGER,
+    nom_post_doc_identidad1                    INTEGER ,
+    
+    post_categoria_premio_id                   INTEGER ,
+    postulacion_id_miembroaacc                 INTEGER ,
+    postulacion_id                             INTEGER ,
+    postulacion_año_oscar                      INTEGER,
+    postulacion_doc_identidad1                 INTEGER
+
+);
+
+ALTER TABLE votos
+    ADD CONSTRAINT votos_pk PRIMARY KEY ( miembro_academia_id_miembro,
+                                          id,
+                                          miembro_academia_doc_identidad );
+
+alter table votos
+    add CONSTRAINT arc_voto check (( (nominacion_id is null )and 
+    (nom_post_cat_premio_id                     is null) and
+    (nominacion_postulacion_id_miemb            is null) and
+   ( nominacion_postulacion_id                  is null) and
+    (nominacion_postulacion_año_oscar           is null) and
+    (nom_post_doc_identidad1                    is null) and
+    
+    (post_categoria_premio_id                   is not null) and
+    (postulacion_id_miembroaacc                 is not null) and
+    (postulacion_id                             is not null) and
+   ( postulacion_año_oscar                      is not null) and
+    (postulacion_doc_identidad1                 is null)  )or(
+    (nominacion_id is null )and
+
+    (nom_post_cat_premio_id is null) and
+    (nominacion_postulacion_id_miemb  is null) and
+   ( nominacion_postulacion_id  is null) and
+    (nominacion_postulacion_año_oscar           is null) and
+    (nom_post_doc_identidad1                    is null) and
+    
+    (post_categoria_premio_id                   is not null) and
+    (postulacion_id_miembroaacc                 is not null) and
+    (postulacion_id                             is not null) and
+   ( postulacion_año_oscar                      is not null) and
+    (postulacion_doc_identidad1                 is not null)
+
+    )
+
+
+
+    );
+
+
+CREATE TABLE votos_postular (
+    anio                             VARCHAR(28) NOT NULL,
+    pelicula_postulada_id_pelicula  INTEGER NOT NULL,
+    miembro_academia_id_miembro     INTEGER NOT NULL,
+    miembro_academia_doc_identidad  INTEGER NOT NULL
+);
+
+ALTER TABLE votos_postular
+    ADD CONSTRAINT votos_postular_pk PRIMARY KEY ( anio,
+                                                   pelicula_postulada_id_pelicula,
+                                                   miembro_academia_id_miembro,
+                                                   miembro_academia_doc_identidad );
+
+ALTER TABLE a_c
+    ADD CONSTRAINT a_c_categoria_premio_fk FOREIGN KEY ( categoria_premio_id )
+        REFERENCES categoria_premio ( id );
+
+ALTER TABLE a_c
+    ADD CONSTRAINT a_c_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
+                                                         miembro_academia_doc_id )
+        REFERENCES miembro_academia ( id_miembroaacc,
+                                      persona_doc_identidad );
+
+
+ALTER TABLE categoria_premio
+    ADD CONSTRAINT cat_premiofk FOREIGN KEY ( categoria_premio_id )
+        REFERENCES categoria_premio ( id );
+
+ALTER TABLE ceremonia
+    ADD CONSTRAINT ceremonia_persona_fk FOREIGN KEY ( persona_doc_identidad )
+        REFERENCES persona ( doc_identidad );
+
+ALTER TABLE miembro_academia
+    ADD CONSTRAINT miembro_academia_persona_fk FOREIGN KEY ( persona_doc_identidad )
+        REFERENCES persona ( doc_identidad );
+
+ALTER TABLE nominacion
+    ADD CONSTRAINT nominacion_postulacion_fk FOREIGN KEY (
+                                                           post_categoria_premio_id,
+                                                            postulacion_doc_identidad,
+                                                          postulacion_id_miembroaacc,
+
+                                                           postulacion_id,
+                                                           postulacion_año_oscar )
+        REFERENCES postulacion (
+                                 categoria_premio_id,
+                                miembro_academia_doc_identidad,
+                                miembro_academia_id_maacc,
+                                 id,
+                                 anio_oscar );
+
+ALTER TABLE p_m_r
+    ADD CONSTRAINT p_m_r_pelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
+        REFERENCES pelicula_postulada ( id_pelicula );
+
+ALTER TABLE p_m_r
+    ADD CONSTRAINT p_m_r_persona_fk FOREIGN KEY ( persona_doc_identidad )
+        REFERENCES persona ( doc_identidad );
+
+ALTER TABLE p_m_r
+    ADD CONSTRAINT p_m_r_rol_fk FOREIGN KEY ( rol_id )
+        REFERENCES rol ( id );
+
+ALTER TABLE postulacion
+    ADD CONSTRAINT post_categoria_premio_fk FOREIGN KEY ( categoria_premio_id )
+        REFERENCES categoria_premio ( id );
+
+
+
+ALTER TABLE postulacion
+    ADD CONSTRAINT postulacion_p_m_r_fk FOREIGN KEY ( p_m_r_id_pelicula,
+                                                      p_m_r_doc_identidad,
+                                                      p_m_r_rol_id )
+        REFERENCES p_m_r ( pelicula_postulada_id_pelicula,
+                           persona_doc_identidad,
+                           rol_id );
+
+
+ALTER TABLE postulacion
+    ADD CONSTRAINT post_pelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
+        REFERENCES pelicula_postulada ( id_pelicula );
+
+ALTER TABLE presentador
+    ADD CONSTRAINT presentador_cat_premio_fk FOREIGN KEY ( categoria_premio_id )
+        REFERENCES categoria_premio ( id );
+
+ALTER TABLE presentador
+    ADD CONSTRAINT presentador_ceremonia_fk FOREIGN KEY ( ceremonia_anio )
+        REFERENCES ceremonia ( anio );
+
+ALTER TABLE presentador
+    ADD CONSTRAINT presentador_persona_fk FOREIGN KEY ( persona_doc_identidad )
+        REFERENCES persona ( doc_identidad );
+
+ALTER TABLE votos
+    ADD CONSTRAINT votos_miembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
+                                                           miembro_academia_doc_identidad )
+        REFERENCES miembro_academia ( id_miembroaacc,
+                                      persona_doc_identidad );
+
+ALTER TABLE votos
+    ADD CONSTRAINT votos_nominacion_fk FOREIGN KEY ( nominacion_id,
+
+                                                     nom_post_cat_premio_id,
+                                                     nominacion_postulacion_id_miemb,
+                                                     nominacion_postulacion_id,
+                                                     nominacion_postulacion_año_oscar,
+                                                     nom_post_doc_identidad1 )
+        REFERENCES nominacion ( id,
+
+                                post_categoria_premio_id,
+                                postulacion_id_miembroaacc,
+                                postulacion_id,
+                                postulacion_año_oscar,
+                                postulacion_doc_identidad );
+
+ALTER TABLE votos
+    ADD CONSTRAINT votos_postulacion_fk FOREIGN KEY (
+                                                      post_categoria_premio_id,
+                                                      postulacion_id_miembroaacc,
+                                                     postulacion_doc_identidad1,
+                                                      postulacion_id,
+                                                      postulacion_año_oscar )
+        REFERENCES postulacion (
+                                 categoria_premio_id,
+                                miembro_academia_id_maacc,
+                                miembro_academia_doc_identidad,
+
+                                 id,
+                                 anio_oscar );
+
+
+ALTER TABLE votos_postular
+    ADD CONSTRAINT VPmiembro_academia_fk FOREIGN KEY ( miembro_academia_id_miembro,
+                                                                    miembro_academia_doc_identidad )
+        REFERENCES miembro_academia ( id_miembroaacc,
+                                      persona_doc_identidad );
+
+
+ALTER TABLE votos_postular
+    ADD CONSTRAINT VPpelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
+        REFERENCES pelicula_postulada ( id_pelicula );
+        
+        
+        
+ insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (1, 'Emelen', '1990-01-18', 'Frickey', 'Haley', 'McDougall', null, '2013-10-06', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (2, 'Neville', '1980-03-06', 'Hanford', 'Byron', 'Raccio', null, '2000-12-25', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (3, 'Dwain', '1981-05-09', 'Domenc', 'Solly', 'Lugton', '2013-11-15', '1999-05-23', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (4, 'Oliy', '1979-11-17', 'Ancliffe', 'Maggi', 'Kirley', '2010-09-10', '2001-03-14', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (5, 'Whitaker', '1968-07-10', 'Chiddy', 'Granville', 'Bonnar', null, '1990-02-05', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (6, 'Vasili', '1970-06-03', 'Livingstone', 'Marwin', 'Runcieman', null, '1988-09-03', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (7, 'Wakefield', '1987-10-19', 'Versey', 'Noah', 'Lucey', null, '2010-06-15', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (8, 'Salaidh', '1960-11-25', 'Seargeant', 'Ginnie', 'Leathwood', null, '1987-01-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (9, 'Carly', '1980-05-30', 'Waskett', 'Hall', 'Georg', '2018-02-28', '2000-06-15', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (10, 'Merrili', '1976-12-14', 'Lightwood', 'Barby', 'Steward', null, '1990-02-02', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (11, 'Ardyce', '1990-11-20', 'Audus', 'Billi', 'MacDowal', null, '2010-01-20', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (12, 'Wyatan', '1989-10-29', 'Rate', 'Ciro', 'Simonutti', null, '2009-08-05', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (13, 'Stefa', '1976-12-13', 'Fenge', 'Karen', 'Shanklin', null, '1990-01-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (14, 'Cortie', '1960-03-22', 'Akred', 'Hastings', 'Vergine', null, '1980-08-15', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (15, 'Tim', '1968-03-27', 'Maryin', 'Allen', 'Dalgarno', null, '2008-08-13', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (16, 'Zahara', '1970-09-18', 'Gennings', 'Ola', 'Ducker', '2018-07-21', '1989-12-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (17, 'Glynn', '1974-08-06', 'McCrackem', 'Keith', 'Erridge', '2019-12-05', '1997-02-07', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (18, 'Lemuel', '1980-05-14', 'Fishburn', 'Holt', 'Dobing', null, '2010-12-14', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (19, 'Hana', '1980-08-06', 'Clubbe', 'Eleanore', 'Stokell', null, '2000-12-26', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (20, 'Franni', '1963-03-03', 'Castille', 'Suzie', 'Hammant', null, '1999-03-27', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (21, 'Thorn', '2000-12-13', 'Brizell', 'Gabby', 'Hazel', null, '2008-01-21', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (22, 'Gratia', '1967-07-18', 'Viscovi', 'Rachelle', 'McTurley', null, '1980-02-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (23, 'Dirk', '1990-09-18', 'Bellino', 'Siegfried', 'Markovic', '2017-09-09', '2010-04-14', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (24, 'Jorey', '2009-12-29', 'Tatchell', 'Carleen', 'Beggan', null, '2021-05-21', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (25, 'Xever', '1996-07-10', 'Pendrick', 'Court', 'Matchett', null, '1975-01-27', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (26, 'Julissa', '1999-08-19', 'Pimlott', 'Jaquenette', 'Alven', null, '2009-03-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (27, 'Adelbert', '1985-08-06', 'McGibbon', 'Winny', 'Cabane', null, '2007-03-03', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (28, 'Meredith', '1987-12-09', 'Kitchener', 'Calhoun', 'Furman', null, '2018-01-24', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (29, 'Carmela', '1987-02-13', 'Quest', 'Lorain', 'Wycliffe', null, '1992-03-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (30, 'L;urette', '2002-08-06', 'Bensley', 'Arabela', 'Albasiny', '2016-09-03', '2006-05-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (31, 'Robinson', '1975-06-10', 'Brazer', 'Brent', 'Osborn', null, '2005-10-22', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (32, 'Drusy', '1989-08-29', 'Ezele', 'Katharyn', 'Bottom', '2011-12-02', '2002-07-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (33, 'Fredi', '1979-11-02', 'Dunrige', 'Starla', 'Trevaskiss', null, '1991-07-04', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (34, 'Joellyn', '1963-01-01', 'Matessian', 'Rosalie', 'Crafter', '2011-11-22', '1986-05-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (35, 'Skippie', '1994-05-03', 'Ramberg', 'Faulkner', 'Clement', null, '2010-06-26', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (36, 'Rhetta', '1972-04-12', 'Shermore', 'Vanny', 'Cameli', '2015-06-07', '1999-06-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (37, 'Florinda', '1969-08-14', 'Missington', 'Rosemonde', 'McKirton', null, '1993-03-13', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (38, 'Roosevelt', '2000-02-26', 'Kinghorn', 'Dominik', 'Pass', null, '2007-05-14', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (39, 'Grady', '1995-10-16', 'Rulf', 'Stevy', 'Akerman', '2020-02-12', '2005-08-28', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (40, 'Donnamarie', '1987-03-05', 'Reignolds', 'Annabela', 'McCalum', null, '1995-05-14', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (41, 'Peg', '1969-10-17', 'Hartridge', 'Meta', 'McMinn', null, '1989-06-16', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (42, 'Odilia', '1988-02-18', 'Pudner', 'Ruby', 'Anear', null, '1995-02-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (43, 'Danila', '1966-05-29', 'Seath', 'Eileen', 'Yvens', '2011-12-18', '1974-01-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (44, 'Borden', '1955-02-13', 'Selburn', 'Jabez', 'Ellaman', '2014-02-23', '1990-10-21', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (45, 'Frances', '1982-02-25', 'Fielders', 'Maurita', 'Portinari', null, '1989-04-23', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (46, 'Kingsly', '1965-09-15', 'Banham', 'Kit', 'Shier', null, '1976-04-24', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (47, 'Lyn', '1996-09-21', 'Spincks', 'Ashely', 'Varty', null, '2005-01-14', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (48, 'Bili', '1971-03-14', 'Trainor', 'Cynthea', 'MacTrusty', null, '2002-03-23', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (49, 'Cinnamon', '1993-03-03', 'Sleford', 'Juline', 'Ridgers', '2017-07-20', '2007-10-24', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (50, 'Benjie', '1989-12-06', 'Hutcheon', 'Euell', 'Sture', null, '2009-10-29', 'M');
+
+
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (51, 'Eugenia', '1971-06-02', 'Cutmare', 'Elia', 'Yard', null, '2004-12-18', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (52, 'Dolorita', '1957-02-27', 'Mingo', 'Nicolle', 'Charo', null, '2013-10-21', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (53, 'Dayle', '1974-06-15', 'Clawson', 'Giff', 'Gavin', null, '2006-10-26', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (54, 'Austin', '1963-04-16', 'Jorcke', 'Estrella', 'Marcelline', null, '2018-01-30', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (55, 'Netti', '1969-06-26', 'Smallridge', 'Tessi', 'Arabelle', null, '2017-05-06', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (56, 'Loree', '2001-10-05', 'Olliff', 'Bernette', 'Adora', null, '2004-09-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (57, 'Shelba', '1961-04-10', 'Samber', 'Davida', 'Luisa', null, '2016-07-17', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (58, 'Darci', '1951-05-07', 'Nethercott', 'Manya', 'Pearla', null, '2009-05-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (59, 'Koo', '1983-04-06', 'Choake', 'Almire', 'Ursala', null, '2009-10-31', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (60, 'Cristina', '1975-03-10', 'Spread', 'Orella', 'Renae', null, '2007-09-16', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (61, 'Magdalen', '1964-02-05', 'Filipputti', 'Dasi', 'Koressa', null, '2016-02-08', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (62, 'Ada', '1978-03-18', 'Folland', 'Dede', 'Lori', null, '2005-10-26', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (63, 'Atlanta', '1961-03-25', 'Cullum', 'Valentijn', 'Silvano', null, '2002-12-18', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (64, 'Vittoria', '1988-05-09', 'Fielders', 'Kamila', 'Mady', null, '2002-07-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (65, 'Karyl', '1966-02-11', 'Doswell', 'Dottie', 'Shirline', null, '2011-12-15', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (66, 'Tressa', '1955-12-31', 'Gantzman', 'Taddeo', 'Hal', null, '2008-10-06', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (67, 'Malena', '1964-07-05', 'Dubs', 'Randy', 'Koralle', null, '2013-09-09', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (68, 'Adi', '1961-06-11', 'Hundley', 'Janeva', 'Daffy', null, '2007-04-24', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (69, 'Gwyneth', '2000-12-04', 'Sammonds', 'Graham', 'Petr', null, '2002-12-02', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (70, 'Wileen', '1978-04-07', 'McRill', 'Earle', 'Dilly', null, '2002-12-15', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (71, 'Karoline', '1968-11-14', 'Semour', 'Elmer', 'Shayne', null, '2002-11-20', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (72, 'Celestia', '1984-08-02', 'Senyard', 'Dion', 'Conway', null, '2016-02-08', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (73, 'Jaine', '2001-11-15', 'Sellor', 'Danya', 'Kinnie', null, '2011-11-24', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (74, 'Gerti', '1979-08-08', 'Rowles', 'Terrell', 'Reade', null, '2016-07-10', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (75, 'Constance', '1981-05-28', 'Gorwood', 'Marta', 'Evy', null, '2012-07-08', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (76, 'Amy', '1999-06-25', 'Hollow', 'Kristofor', 'Ruperto', null, '2006-06-28', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (77, 'Ardyce', '1972-04-17', 'Lippini', 'Kevon', 'Kristoforo', null, '2005-11-09', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (78, 'Amalee', '1977-12-17', 'Petrolli', 'Bondon', 'Abie', null, '2004-04-27', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (79, 'Natalya', '1958-05-10', 'Balhatchet', 'Annissa', 'Noami', null, '2013-08-02', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (80, 'Joelle', '1959-11-19', 'Scarfe', 'Eadith', 'Trescha', null, '2008-10-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (81, 'Ashely', '1985-12-12', 'Bevis', 'Elton', 'Hillery', null, '2013-07-03', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (82, 'Jenni', '1995-01-25', 'Dennerley', 'Clevie', 'Georgie', null, '2015-10-01', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (83, 'Eustacia', '1999-06-02', 'Targett', 'Ealasaid', 'Arabel', null, '2010-10-20', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (84, 'Hortensia', '1993-03-09', 'Ratke', 'Demetris', 'Morena', null, '2002-10-03', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (85, 'Kore', '1982-07-02', 'Lattka', 'Anna-maria', 'Tawsha', null, '2012-05-30', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (86, 'Lettie', '1951-07-11', 'Hutchison', 'Padriac', 'Farr', null, '2010-10-20', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (87, 'Bride', '1976-03-08', 'Goldsworthy', 'Lenci', 'Kinsley', null, '2016-07-11', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (88, 'Dorri', '1964-09-17', 'McKain', 'Codi', 'Gloriane', null, '2016-02-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (89, 'Katee', '1997-03-03', 'Itskovitz', 'Alvin', 'Dunstan', null, '2013-03-25', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (90, 'Pam', '1980-07-15', 'Popplewell', 'Hugues', 'Turner', null, '2010-06-02', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (91, 'Cloris', '1988-09-24', 'Bene', 'Frazier', 'Wash', null, '2003-06-22', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (92, 'Minna', '1952-09-01', 'Tissiman', 'Claybourne', 'Kristoffer', null, '2009-07-31', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (93, 'Petra', '1984-04-01', 'Bortolussi', 'Karolina', 'Charleen', null, '2014-07-05', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (94, 'Laney', '1980-05-17', 'Fussen', 'Kurtis', 'Jorge', null, '2002-07-23', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (95, 'Ardelle', '2000-10-24', 'Ragat', 'Laure', 'Charlena', null, '2006-02-02', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (96, 'Ninnetta', '1999-08-27', 'Solland', 'Nata', 'Norina', null, '2010-02-20', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (97, 'Ardenia', '1966-09-22', 'Kenforth', 'Joli', 'Gusella', null, '2003-06-09', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (98, 'Gayla', '1960-06-08', 'Parlor', 'Ulrike', 'Brianna', null, '2014-08-23', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (99, 'Ronny', '1977-03-13', 'Higbin', 'Faunie', 'Debor', null, '2012-08-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (100, 'Tildi', '1977-01-19', 'Rawcliff', 'Hilarius', 'Sutton', null, '2013-09-17', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (101, 'Blancha', '1961-02-06', 'Cone', 'Shalne', 'Trula', null, '2008-09-02', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (102, 'Casey', '1951-08-04', 'Speake', 'Shelley', 'Immanuel', null, '2003-03-04', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (103, 'Bobbie', '1983-05-23', 'Comford', 'Isa', 'Abran', null, '2012-04-11', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (104, 'Phillis', '1960-01-04', 'Totterdill', 'Susy', 'Margaux', null, '2007-02-02', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (105, 'Liza', '1989-10-28', 'McLean', 'Olive', 'Hannah', null, '2010-04-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (106, 'Giulietta', '1996-12-05', 'Bremmell', 'Lelah', 'Tomasina', null, '2005-12-12', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (107, 'Pansie', '1984-01-15', 'Roselli', 'Saul', 'Zared', null, '2006-10-24', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (108, 'Viola', '2000-06-08', 'Elster', 'Noak', 'Devy', null, '2011-04-14', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (109, 'Reta', '1967-08-18', 'Hastler', 'Rem', 'Caldwell', null, '2004-06-24', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (110, 'Therese', '1961-02-14', 'Hawtry', 'Corly', 'Shana', null, '2014-07-16', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (111, 'Doretta', '1999-01-06', 'Longhi', 'King', 'Boothe', null, '2015-12-02', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (112, 'Katti', '1986-12-11', 'Ivetts', 'Cthrine', 'Pauletta', null, '2006-07-02', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (113, 'Yetta', '1986-12-06', 'Gummow', 'Malorie', 'Sunny', null, '2013-11-28', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (114, 'Darsie', '1959-08-12', 'Boteman', 'Mariana', 'Latia', null, '2002-06-05', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (115, 'Clementine', '1974-10-17', 'Blees', 'Evonne', 'Amberly', null, '2003-12-29', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (116, 'Jeanne', '1993-05-09', 'Barroux', 'Margalit', 'Kasey', null, '2011-02-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (117, 'Robbin', '1987-04-02', 'Novis', 'Kelci', 'Loralee', null, '2003-08-06', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (118, 'Billy', '1961-02-19', 'Ostler', 'Gusella', 'Ginevra', null, '2003-06-15', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (119, 'Bridie', '1953-10-06', 'Heyburn', 'Gabi', 'Kayle', null, '2010-07-15', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (120, 'Livvie', '1999-01-18', 'Chiplin', 'Mortie', 'Dur', null, '2015-04-19', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (121, 'Adah', '2000-12-19', 'Conechie', 'Meggi', 'Lynda', null, '2016-08-04', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (122, 'Jaquith', '1982-10-13', 'Wheatland', 'Holden', 'Justen', null, '2002-10-08', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (123, 'Jaymee', '2001-04-08', 'Bryceson', 'Clary', 'Esma', null, '2002-12-11', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (124, 'Kathie', '1992-03-27', 'Shewan', 'Skipp', 'Armando', null, '2017-04-19', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (125, 'Corabelle', '1956-02-05', 'Clifford', 'Klara', 'Georgianna', null, '2010-11-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (126, 'Kiley', '1963-11-19', 'Bernucci', 'Chandal', 'Kessia', null, '2014-02-14', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (127, 'Opal', '1993-07-29', 'Linsey', 'Consuela', 'Edyth', null, '2011-12-22', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (128, 'Jacki', '1975-10-05', 'Leynagh', 'Illa', 'Fay', null, '2007-01-25', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (129, 'Concettina', '2000-05-02', 'Hegel', 'Germana', 'Cyndia', null, '2014-01-03', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (130, 'Evy', '1954-05-11', 'Tippin', 'Cyrille', 'Eric', null, '2002-12-04', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (131, 'Nevsa', '2002-04-12', 'Fletham', 'Amandi', 'Ninnette', null, '2010-10-12', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (132, 'Tiffani', '1954-02-28', 'Farndell', 'Paulie', 'Sibilla', null, '2015-07-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (133, 'Carolyn', '1968-05-29', 'Canet', 'Jenilee', 'Tonya', null, '2003-11-04', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (134, 'Robby', '1997-11-09', 'Fair', 'Melina', 'Goldina', null, '2003-04-10', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (135, 'Ilse', '1987-12-12', 'Poel', 'Mara', 'Amara', null, '2008-12-03', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (136, 'Dell', '1970-03-15', 'Kuscha', 'Raddie', 'Steward', null, '2010-11-06', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (137, 'Bren', '2000-10-03', 'Witling', 'Laryssa', 'Marrilee', null, '2013-06-28', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (138, 'Rhianna', '1958-01-27', 'MacAlister', 'Bill', 'Brien', null, '2004-09-19', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (139, 'Charlotte', '1976-03-24', 'Monckton', 'Blanca', 'Michaeline', null, '2004-04-22', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (140, 'Georgianna', '1968-04-02', 'Foskew', 'Franciskus', 'Shermy', null, '2008-03-31', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (141, 'Hazel', '1976-04-20', 'Tacon', 'Somerset', 'Adolphus', null, '2009-09-13', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (142, 'Myrtice', '1979-06-04', 'Arnal', 'Tarra', 'Jasmin', null, '2002-07-30', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (143, 'Addia', '1999-03-29', 'Joselevitz', 'Tish', 'Hendrika', null, '2008-01-19', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (144, 'Wylma', '1987-07-06', 'Joesbury', 'Lonnie', 'Cordy', null, '2003-03-22', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (145, 'Gwenni', '1987-05-19', 'Yarham', 'Theobald', 'Brewer', null, '2017-07-05', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (146, 'Sissy', '1990-07-30', 'Gorbell', 'Mace', 'Erie', null, '2013-09-25', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (147, 'Jayne', '1969-10-07', 'Jencey', 'Randene', 'Trisha', null, '2003-10-18', 'F');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (148, 'Dorice', '1972-11-27', 'Iwaszkiewicz', 'Garry', 'Perkin', null, '2004-06-13', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (149, 'Chandra', '1987-07-08', 'Wilford', 'David', 'Butch', null, '2009-10-25', 'M');
+insert into persona (doc_identidad, nombre, fecha_nacimiento, apellido, segundo_nombre, segundo_apellido, fecha_defuncion, fecha_inicio_carrera, sexo) values (150, 'Kettie', '1981-07-13', 'Cassells', 'Casar', 'Micheil', null, '2017-07-29', 'M');
+
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (1, 'Sonic', 'Sonic', 'Morbi non lectus. Aliquam sit amet diam in magna bibendum imperdiet. Nullam orci pede, venenatis non, sodales sed, tincidunt eu, felis.', 2020, ARRAY[('comedia'),('accion'),('ciencia ficcion')], ARRAY[('Japon'),('Estados Unidos'),('Canada')], 'Paramount Pictures', 83, 'A', '2020-02-14', null, null, 'https://drive.google.com/file/d/1NGXDafkb4fzlYep6RHnalTReV76sUJB8/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (2, '1917', '1917', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 2019, ARRAY[('accion'),('drama'),('belica')], ARRAY[('Reino unido')], 'Universal Pictures', 119, 'C', '2019-12-04', null, null, 'https://drive.google.com/file/d/1zslefXkZdTGXO8i7a6TbnS3V7q-c91HA/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (3, 'el renacido', 'the revenant', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 2015, ARRAY[('accion'),('drama'),('western')], ARRAY[('Estados Unidos')], '20th Century Fox', 156, 'C', '2015-12-25', null, null, 'https://drive.google.com/file/d/17_e5oXc9VfFPU1QrLU3Hhb-pmFglayCT/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (4, 'erase una vez en hollywood', 'once upon a time in hollywood', 'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 2019, ARRAY[('comedia'),('crimenes'),('ucronia')], ARRAY[('Estados Unidos')], 'Sony Pictures', 160, 'C', '2019-05-21', null, null, 'https://drive.google.com/file/d/1E5KZH8cuet4nZjAFylBPxnymbA_yLh14/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (5, 'el joker', 'Joker', 'In congue. Etiam justo. Etiam pretium iaculis justo.In hac habitasse platea dictumst. Etiam faucibus cursus urna. Ut tellus.', 2019, ARRAY[('drama'),('suspenso'),('crimen'),('tragedia')], ARRAY[('Estados Unidoas')], 'Warner Bros. Pictures', 122, 'B', '2019-08-31', null, null, 'http://dummyimage.com/225x100.png/5fa2dd/ffffff');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (6, 'La La Land', 'La La Land', 'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 2016,  ARRAY[('drama'),('romance'),('musical')],  ARRAY[('Estados Unidos'),('Hong Kong')], 'Lionsgate', 128, 'B', '2017-01-13', null, null, 'https://drive.google.com/file/d/12nLJ_IBvDtIqSgqxRY2Omjk2VJI-Iiic/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (7, 'soul', 'soul', 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem.', 2020, ARRAY[('animacion'),('comedia'),('drama'),('musica')] , ARRAY[('Estados Unidos')], 'Walt Disney Studios Motion Pictures', 100, 'A', '2020-12-25', null, null, 'https://drive.google.com/file/d/1hXUNf_3W6ZQZEo3_G5Ckve3DRngTtpT0/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (8, 'el irlandes', 'the irishman', 'Sed ante. Vivamus tortor. Duis mattis egestas metus.', 2019, ARRAY[('gansteres'),('epica')],ARRAY[('drama'),('Estados Unidos')], 'Netflix', 2019, 'B', '2019-11-01', null, null, 'https://drive.google.com/file/d/14sZLd8FPsLaqalcQsJBueEQI7LwNZ1oq/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (9, 'Mank', 'Mank', 'Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti.', 2020,ARRAY[('Drama')] , ARRAY[('Estados Unidos')],'Netflix', 131, 'B', '2020-12-4', null, null, 'https://drive.google.com/file/d/1rtT_lGtOpqHLGJ9LUq36TUsi6KdAsjqu/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (10, 'Nomasland', 'Nomasland', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2019, ARRAY[('drama')], ARRAY[('Estados Unidos')], 'Searchlight Pictures', 108, 'B', '2020-09-11', null, null, 'https://drive.google.com/file/d/1PR3rogbAEG4QbtX-ertQjdbL1ppzu0H-/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (11, 'Sonido del metal', 'Sound of metal', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2019, ARRAY[('drama')], ARRAY[('Estados Unidos')], 'Amazon Studios' ,120, 'B', '2020-12-4', null, null, 'https://drive.google.com/file/d/1Eog4F1RL0-U-K7dUCQBw9KwAWLYJBFqg/view?usp=sharing');
+insert into pelicula_postulada (id_pelicula, nombre, titulo_original, sinopsis, anio, genero, pais, distribuidor, duracion_min, censura, fecha_estreno_la, total_nominaciones, total_Premios, foto) values (12, 'Otra ronda', 'Drunk', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.', 2019, ARRAY[('comedia')], ARRAY[('Estados Unidos')], 'Nordisk Film' ,115, 'B', '2020-09-12', null, null, 'https://drive.google.com/file/d/1Z_ra11gevh9X7CGgJ7_L0n1syRwu2tKE/view?usp=sharing');
+
+
+insert into rol (id, nombre, descripcion) values (1,'actor','persona que interpreta un personaje en una obra de teatro, una telenovela o una película de cine');
+insert into rol (id, nombre, descripcion) values (2,'director','persona que dirige la filmación de una película');
+insert into rol (id, nombre, descripcion) values (3,'escritor','persona que se dedica a escribir obras literarias');
+insert into rol (id, nombre, descripcion) values (4,'compositor','persona que hace composiciones musicales');
+insert into rol (id, nombre, descripcion) values (5,'maquillaje',' persona que tiene como profesión encargarse de aplicar el maquillaje sobre la cara u otras partes del cuerpo a personas que desarrollan su profesión ante el público');
+insert into rol (id, nombre, descripcion) values (6,'estilista','Las estilistas son los profesionales encargados de crear una armonía estética alrededor de un sujeto o escenario.');
+insert into rol (id, nombre, descripcion) values (7,'animadores','animador crea animaciones y efectos visuales para televisión, películas, videojuegos y otros medios.');
+insert into rol (id, nombre, descripcion) values (8,'vestuario','encargado de vestimenta a usar por un sujeto.');
+
+
+
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (1,'2018-01-1',null,'NO',1,ARRAY[('actor'),('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (2,'2015-02-1',null,'SI',2,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (3,'2003-02-1',null,'NO',3,ARRAY[('compositor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (4,'2015-03-1',null,'SI',4,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (5,'2000-11-1',null,'SI',5,ARRAY[('actor'),('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (6,'2004-09-1',null,'NO',6,ARRAY[('escritor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (7,'1990-01-1',null,'NO',7,ARRAY[('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (8,'1991-12-1',null,'SI',8,ARRAY[('vestuario')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (9,'2015-12-1',null,'SI',9,ARRAY[('maquillaje')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (10,'2010-12-1',null,'NO',10,ARRAY[('estilista')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (11,'2008-12-1',null,'NO',11,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (12,'2008-12-1',null,'NO',12,ARRAY[('actor')]);
+
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (13,'2018-01-1',null,'NO',85,ARRAY[('actor'),('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (14,'2015-02-1',null,'SI',86,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (15,'2003-02-1',null,'NO',87,ARRAY[('compositor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (16,'2015-03-1',null,'SI',88,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (17,'2000-11-1',null,'SI',89,ARRAY[('actor'),('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (18,'2004-09-1',null,'NO',90,ARRAY[('escritor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (19,'1990-01-1',null,'NO',91,ARRAY[('director')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (20,'1991-12-1',null,'SI',92,ARRAY[('vestuario')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (21,'2015-12-1',null,'SI',93,ARRAY[('maquillaje')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (22,'2010-12-1',null,'NO',94,ARRAY[('estilista')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (23,'2008-12-1',null,'NO',95,ARRAY[('actor')]);
+insert into miembro_academia (id_miembroaacc,fecha_i,fecha_f,vitalicio,persona_doc_identidad,area) values (24,'2008-12-1',null,'NO',96,ARRAY[('actor')]);
+
+
+
+
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (1,'largometrajes',1,'categoria dirigida a los largometrajes',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (2,'direccion',1,'categoria dirigida a los directores',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (3,'actuacion',1,'categoria dirigida a los actores',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (4,'escritura',1,'categoria dirigida a los escritores',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (5,'fotografia',1,'categoria dirigida a los fotografos',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (6,'sonido',1,'categoria dirigida al sonido',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (7,'direccion de arte',1,'categoria dirigida a los artistas',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (8,'cortometrajes',1,'categoria dirigida a los cortometrajes',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (9,'musica',1,'categoria dirigida a la musica',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (10,'peliculas animadas',1,'categoria dirigida a las animaciones',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (11,'vestuario',1,'categoria dirigida al vestuario',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (12,'maquillaje',1,'categoria dirigida al maquillaje',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (13,'documentales',1,'categoria dirigida a los documentales',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (14,'pelicula extranjera',1,'categoria dirigida a las peliculas extranjeras',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (27,'edicion',1,'categoria dirigida a las ediciones',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (15,'efectos visuales',1,'categoria dirigida a los efectos visuales',null,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (16,'mejor pelicula',2,'premio a mejor pelicula',1,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (17,'mejor director',2,'premio a mejor director',2,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (18,'mejor actor',2,'premio a mejor actor',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (19,'mejor actriz',2,'premio a mejor actriz',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (20,'mejor guion adaptado',2,'premio a mejor guion',4,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (21,'mejor fotografia',2,'premio a mejor fotografia',5,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (22,'mejor direccion de arte',2,'premio mejor direccion de arte',7,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (23,'mejor sonido',2,'premio mejor sonido',6,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (24,'mejor cortometraje de ficcion',2,'premio mejor cortometraje',8,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (25,'mejor banda sonora',2,'premio mejor banda sonora',9,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (26,'mejor cancion original',2,'premio mejor cancion original',9,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (28,'mejor montaje',2,'premio mejor montaje',28,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (29,'mejor actor de reparto',2,'premio mejor actor de reparto',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (30,'mejor actriz de reparto',2,'premio mejor actriz de reparto',3,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (31,'mejor efectos visuales',2,'premio mejores efectos visuales',15,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (32,'mejor guion original',2,'premio mejor guion original',4,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (33,'mejor documental largo',2,'premio mejor documental largo',13,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (34,'mejor documental corto',2,'premio mejor documental corto',13,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (35,'mejor diseño de vestuario',2,'premio mejor diseño de vestuario',11,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (36,'mejor pelicula no habla inglesa',2,'premio mejor dpelicula de no habla inglesa',14,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (37,'mejor edicion de sonido',2,'premio mejor edicion de sonido',6,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (38,'mejor maquillaje',2,'premio mejor maquillaje',12,ARRAY[(null,null,null,null)::hist_premios]);
+insert into categoria_premio (id,nombre,nivel,descripcion,categoria_premio_id,historico_premio) values (39,'mejor pelicula de animacion',2,'premio mejor pelicula de animacion',10,ARRAY[(null,null,null,null)::hist_premios]);
+
+
+
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (1,13,1,null); 
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (1,14,2,null); 
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (2,15,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (2,16,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (3,17,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (3,18,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (4,19,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (4,20,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (5,21,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (5,22,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (6,23,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (6,24,2,null);
+
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (7,96,1,null); 
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (7,97,2,null); 
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (8,98,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (8,99,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (9,100,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (9,101,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (10,102,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (10,103,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (11,104,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (11,105,2,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (12,106,1,null);
+insert into p_m_r (pelicula_postulada_id_pelicula,persona_doc_identidad,rol_id,cancion_p_m_r) values (12,107,2,null);
+
+insert into critica (id,anio,texto,negativa) values(1,1952,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(2,1952,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(3,1952,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(4,1952,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(5,1952,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(6,1953,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(7,1953,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(8,1953,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(9,1953,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(10,1953,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(11,1954,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(12,1954,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(13,1954,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(14,1954,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(15,1955,'a película de Cecil B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(16,1955,'a película de ana B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+insert into critica (id,anio,texto,negativa) values(17,1955,'a película de juan. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(18,1955,'a película de martin B. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','S');
+insert into critica (id,anio,texto,negativa) values(19,1955,'a película de toberto. DeMille El mayor espectáculo del mundo es una de esas películas que aún ganando el premio más importante, no tienen el peso cinematográfico que se supone','N');
+
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (2,'United Way Worldwide','mision de...' ,ARRAY[(2000,10,1000000)::hist_donacion,(2002,15,800000)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (3,'Feeding America','mision de...' ,ARRAY[(1999,10,900000)::hist_donacion,(2003,15,800500)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (4,'Direct Relief','mision de...' ,ARRAY[(2000,30,2000000)::hist_donacion,(2001,25,2000500)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (5,'africa water','mision de...' ,ARRAY[(2002,10,1000000)::hist_donacion,(2003,15,800000)::hist_donacion]);
+insert into donacion_organizacion (id,nombre,mision,historico_donacion) values (6,'Salvation Army','mision de...' ,ARRAY[(1999,10,900000)::hist_donacion,(2003,15,800500)::hist_donacion,(2004,10,900000)::hist_donacion,(2005,15,800500)::hist_donacion]);
+
+
+
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,1,1);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,2,2);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,3,3);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (25,3,3);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (26,3,3);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,4,4);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,5,5);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,6,6);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (20,6,6);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (32,6,6);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,7,7);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,7,7);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,8,8);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (35,8,8);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,9,9);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (38,9,9);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,10,10);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (38,10,10);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,11,11);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,12,12);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,12,12);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,12,12);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,12,12);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,12,12);
+
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,13,85);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,13,85);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,13,85);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,13,85);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,13,85);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,13,85);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,14,86);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,14,86);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,14,86);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,14,86);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,14,86);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,15,87);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (25,15,87);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (26,15,87);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,16,88);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,16,88);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,16,88);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,16,88);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,16,88);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,17,89);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,17,89);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,17,89);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,17,89);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,17,89);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,17,89);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,18,90);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (20,18,90);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (32,18,90);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,19,91);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (17,19,91);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,20,92);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (35,20,92);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,21,93);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (38,21,93);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,22,94);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (38,22,94);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,23,95);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,23,95);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,23,95);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,23,95);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,23,95);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (16,24,96);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (18,24,96);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (19,24,96);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (29,24,96);
+insert into a_c (categoria_premio_id,miembro_academia_id_miembro,miembro_academia_doc_id) values (30,24,96);
+
+
+insert into ceremonia (anio,numero_edicion,fecha,descripcion,lugar,persona_doc_identidad) values (2018,90,'2018-02-25','ceremonia de premios oscars numero....','Dolby Theatre de Los Ángeles',13);
+insert into ceremonia (anio,numero_edicion,fecha,descripcion,lugar,persona_doc_identidad) values (2019,92,'2019-03-25','ceremonia de premios oscars numero....','Dolby Theatre de Los Ángeles',14);
+insert into ceremonia (anio,numero_edicion,fecha,descripcion,lugar,persona_doc_identidad) values (2020,93,'2020-03-25','ceremonia de premios oscars numero....','Dolby Theatre de Los Ángeles',15);
+
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,16,62);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,17,63);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,18,64);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,19,65);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,20,66);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,21,67);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,22,68);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,23,69);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,24,70);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,25,71);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,26,72);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,27,73);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,28,74);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,29,75);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,30,76);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,31,77);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,32,78);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,33,79);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,34,80);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,35,81);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,36,82);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,37,83);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2018,38,84);
+
+
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,16,16);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,17,17);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,18,18);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,19,19);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,20,20);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,21,21);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,22,22);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,23,23);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,24,24);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,25,25);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,26,26);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,27,27);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,28,28);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,29,29);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,30,30);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,31,31);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,32,32);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,33,33);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,34,34);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,35,35);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,36,36);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,37,37);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2019,38,38);
+
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,16,39);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,17,40);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,18,41);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,19,42);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,20,43);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,21,44);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,22,45);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,23,46);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,24,47);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,25,48);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,26,49);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,27,50);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,28,51);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,29,52);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,30,53);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,31,54);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,32,55);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,33,56);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,34,57);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,35,58);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,36,59);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,37,60);
+insert into presentador (ceremonia_anio,categoria_premio_id,persona_doc_identidad) values (2020,38,61);
+                                                                                                                                                                                                                                                                     
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (1,2019,1,16,1,null,null,null,1);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (2,2019,null,17,1,1,14,2,1);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (3,2019,2,16,2,null,null,null,2);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (4,2019,null,18,2,2,15,1,2);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (5,2019,3,16,3,null,null,null,3);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (6,2019,null,18,4,3,17,1,4);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (7,2019,4,16,5,null,null,null,5);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (8,2019,null,17,5,5,21,1,5);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (9,2019,6,16,6,null,null,null,6);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (10,2019,null,17,7,6,24,2,7);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (11,2019,7,16,8,null,null,null,8);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (12,2019,8,16,9,null,null,null,9);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (12,2019,9,16,10,null,null,null,10);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (13,2019,10,16,11,null,null,null,11);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (14,2019,null,18,11,6,23,2,11);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (15,2019,11,16,12,null,null,null,12);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (16,2019,null,17,12,7,97,2,12);
+insert into postulacion ( id,anio_oscar,pelicula_postulada_id_pelicula,categoria_premio_id,miembro_academia_id_maacc,p_m_r_id_pelicula,p_m_r_doc_identidad,p_m_r_rol_id,miembro_academia_doc_identidad) values (17,2019,12,16,13,null,null,null,85);
+
+
