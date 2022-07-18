@@ -122,7 +122,7 @@ CREATE TABLE nominacion (
 
 ALTER TABLE nominacion
     ADD CONSTRAINT nominacion_pk PRIMARY KEY ( id,
-                                               
+
                                                post_categoria_premio_id,
                                                postulacion_id_miembroaacc,
                                                postulacion_id,
@@ -183,13 +183,13 @@ ALTER TABLE persona ADD CONSTRAINT persona_pk PRIMARY KEY ( doc_identidad );
 CREATE TABLE postulacion (
     id                              serial not null,
     anio_oscar                       INTEGER NOT NULL,
-    pelicula_postulada_id_pelicula  INTEGER NOT NULL,
+    pelicula_postulada_id_pelicula  INTEGER ,
     categoria_premio_id             INTEGER NOT NULL,
 
     miembro_academia_id_maacc       INTEGER NOT NULL,
-    p_m_r_id_pelicula               INTEGER NOT NULL,
-    p_m_r_doc_identidad             INTEGER NOT NULL,
-    p_m_r_rol_id                    INTEGER NOT NULL,
+    p_m_r_id_pelicula               INTEGER ,
+    p_m_r_doc_identidad             INTEGER ,
+    p_m_r_rol_id                    INTEGER ,
     miembro_academia_doc_identidad  INTEGER NOT NULL
 );
 
@@ -199,7 +199,9 @@ ALTER TABLE postulacion
                                                 miembro_academia_doc_identidad,
                                                 id,
                                                 anio_oscar );
-
+Alter table postulacion 
+    add CONSTRAINT arco_postulacion check (((pelicula_postulada_id_pelicula is null) and (p_m_r_id_pelicula is not null) and (p_m_r_doc_identidad is not null) and (p_m_r_rol_id is not null))
+    or ((pelicula_postulada_id_pelicula is not null) and (p_m_r_id_pelicula is null) and (p_m_r_doc_identidad is null) and (p_m_r_rol_id is null)));
 
 CREATE TABLE presentador (
     ceremonia_anio         INTEGER NOT NULL,
@@ -229,44 +231,62 @@ CREATE TABLE votos (
     id                                         serial not null,
     fecha_hora                                 TIMESTAMP(0) NOT NULL,
     tipo                                       VARCHAR(1) NOT NULL,
-
+    miembro_academia_doc_identidad             INTEGER NOT NULL,
     miembro_academia_id_miembro                INTEGER NOT NULL,
-    nominacion_id                              INTEGER NOT NULL,
 
-    nominacion_post_id_pelicula                INTEGER NOT NULL,
-    nom_post_cat_premio_id                     INTEGER NOT NULL,
-    nominacion_postulacion_id_miemb            INTEGER NOT NULL,
-    nominacion_postulacion_id                  INTEGER NOT NULL,
-    nominacion_postulacion_año_oscar           INTEGER
-,
-    postulacion_id_pelicula                    INTEGER NOT NULL,
+    nominacion_id                              INTEGER ,
+    nominacion_post_id_pelicula                INTEGER ,
+    nom_post_cat_premio_id                     INTEGER ,
+    nominacion_postulacion_id_miemb            INTEGER ,
+    nominacion_postulacion_id                  INTEGER ,
+    nominacion_postulacion_año_oscar           INTEGER,
+    nom_post_doc_identidad1                    INTEGER ,
+    postulacion_id_pelicula                    INTEGER ,
+    post_categoria_premio_id                   INTEGER ,
+    postulacion_id_miembroaacc                 INTEGER ,
+    postulacion_id                             INTEGER ,
+    postulacion_año_oscar                      INTEGER,
+    postulacion_doc_identidad1                 INTEGER
 
-    post_categoria_premio_id                   INTEGER NOT NULL,
-    postulacion_id_miembroaacc                 INTEGER NOT NULL,
-    postulacion_id                             INTEGER NOT NULL,
-    postulacion_año_oscar                      INTEGER
-,
-    postulacion_doc_identidad1                 INTEGER NOT NULL,
-    nom_post_doc_identidad1                    INTEGER NOT NULL,
-    miembro_academia_doc_identidad             INTEGER NOT NULL
 );
 
 ALTER TABLE votos
     ADD CONSTRAINT votos_pk PRIMARY KEY ( miembro_academia_id_miembro,
                                           id,
-                                          nominacion_id,
-                                          nominacion_post_id_pelicula,
-                                          nom_post_cat_premio_id,
-                                          nominacion_postulacion_id_miemb,
-                                          nominacion_postulacion_id,
-                                          nominacion_postulacion_año_oscar,
-                                          nom_post_doc_identidad1,
-                                          postulacion_id_pelicula,
-                                          post_categoria_premio_id,
-                                          postulacion_id_miembroaacc,
-                                          postulacion_id,
-                                          postulacion_año_oscar,
-                                          postulacion_doc_identidad1 );
+                                          miembro_academia_doc_identidad );
+
+alter table votos
+    add CONSTRAINT arc_voto check (( (nominacion_id is null )and (nominacion_post_id_pelicula is null) and
+    (nom_post_cat_premio_id                     is null) and
+    (nominacion_postulacion_id_miemb            is null) and
+   ( nominacion_postulacion_id                  is null) and
+    (nominacion_postulacion_año_oscar           is null) and
+    (nom_post_doc_identidad1                    is null) and
+    (postulacion_id_pelicula                    is not null) and
+    (post_categoria_premio_id                   is not null) and
+    (postulacion_id_miembroaacc                 is not null) and
+    (postulacion_id                             is not null) and
+   ( postulacion_año_oscar                      is not null) and
+    (postulacion_doc_identidad1                 is null)  )or(
+    (nominacion_id is null )and
+    (nominacion_post_id_pelicula is null) and
+    (nom_post_cat_premio_id is null) and
+    (nominacion_postulacion_id_miemb  is null) and
+   ( nominacion_postulacion_id  is null) and
+    (nominacion_postulacion_año_oscar           is null) and
+    (nom_post_doc_identidad1                    is null) and
+    (postulacion_id_pelicula                    is not null) and
+    (post_categoria_premio_id                   is not null) and
+    (postulacion_id_miembroaacc                 is not null) and
+    (postulacion_id                             is not null) and
+   ( postulacion_año_oscar                      is not null) and
+    (postulacion_doc_identidad1                 is not null)
+
+    )
+
+
+
+    );
 
 
 CREATE TABLE votos_postular (
