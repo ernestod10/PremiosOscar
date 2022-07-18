@@ -5,14 +5,12 @@ create or replace function votos_postular_fn() returns trigger as $vpTrigger$
         end if;
     end;
     $vpTrigger$ language plpgsql;
-
-
 Create  TRIGGER "VP_trigger" BEFORE INSERT ON "votos_postular"
 FOR EACH ROW
 execute procedure votos_postular_fn();
 END;
-
-create or replace function duplicado_postular() returns trigger as $postulacion_trigger$
+--------------------------------------------------------------------------------------------------------------------
+create or replace function duplicado_postular_trigger() returns trigger as $postulacion_trigger$
     begin
         if (SELECT * FROM postulacion WHERE postulacion.pelicula_postulada_id_pelicula = NEW.pelicula_postulada_id_pelicula and
                                               postulacion.categoria_premio_id = NEW.categoria_premio_id)
@@ -21,13 +19,23 @@ create or replace function duplicado_postular() returns trigger as $postulacion_
             raise exception 'ya la pelicula en esa categoria esta postulada';
         end if;
     end;
-    $postulacion_trigger$ language plpgsql;
-
-
-Create  TRIGGER "postulacion_trigger" BEFORE INSERT ON "postulacion"
+    $$ language plpgsql;
+Create  TRIGGER "duplicado_trigger" BEFORE INSERT ON "postulacion"
 FOR EACH ROW
-execute procedure duplicado_postular();
+execute procedure duplicado_postular_trigger();
 END;
+--------------------------------------------------------------------------------------------------------------------
+create or replace function postulacion_trigger() returns trigger as $$
+    begin
+       insert into votos_postular (anio, pelicula_postulada_id_pelicula, miembro_academia_id_miembro, miembro_academia_doc_identidad) VALUES 
+                                                                                                                                          (new.anio_oscar,new.pelicula_postulada_id_pelicula,new.miembro_academia_id_maacc,new.miembro_academia_doc_identidad);
+    end;
+    $$ language plpgsql;
+Create  TRIGGER "postulacion_trigger" after INSERT ON "postulacion"
+FOR EACH ROW
+execute procedure postulacion();
+END;
+
 
 create or replace function verificar_categoria() returns trigger as $vpTrigger$
     declare
@@ -36,8 +44,6 @@ create or replace function verificar_categoria() returns trigger as $vpTrigger$
 
     begin
         for id_categoria in (select a_c.categoria_premio_id from a_c where miembro_academia_id_miembro = New.miembro_academia_id_maacc) loop
-
-
             if (select id from postulacion where (pelicula_postulada_id_pelicula = new.pelicula_postulada_id_pelicula or (p_m_r_id_pelicula = new.p_m_r_id_pelicula and  p_m_r_doc_identidad = new.p_m_r_doc_identidad) )and id_categoria = new.categoria_premio_id ) then
             duplicado = true;
             end if;
@@ -50,12 +56,16 @@ create or replace function verificar_categoria() returns trigger as $vpTrigger$
         end if;
     end;
     $vpTrigger$ language plpgsql;
-
-
 Create  TRIGGER "postulacion_duplicado_trigger" BEFORE INSERT or update ON "postulacion"
 FOR EACH ROW
 execute procedure verificar_categoria();
 END;
+
+
+
+
+
+
 
 
 --cuenta los votos de postulacion e inserta en nominados
@@ -104,9 +114,6 @@ AS $$
             LOOP
             update nominacion set ganador = True where id = id_nom;
             update pelicula_postulada  set total_premios = total_premios+1 where id_pelicula = (select pelicula_postulada_id_pelicula from postulacion where id = (select postulacion_id from nominacion  ) ) or id_pelicula =(select p_m_r_id_pelicula from postulacion);
-
-
-
         END LOOP;
     END LOOP;
     END;
@@ -119,8 +126,6 @@ language plpgsql;
 
 -- Vistas
 -- create vew for pelicula_postulada joined with votos_postular
-CREATE VIEW pelicula_postulada_votos_postular AS
-
 
 
 
@@ -133,8 +138,11 @@ CREATE VIEW pelicula_postulada_votos_postular AS
 
 --Cuentas de usuario final
 Create role Miembro_Academia;
-grant Miembro_Academia select on pelicula_postulada_votos_postular;
-grant miembro_academia insert on voto;
+grant Miembro_Academia select on pelicula_postulada;
+grant Miembro_Academia insert on pelicula_postulada;
+grant Miembro_Academia select on postulacion;
+grant Miembro_Academia select on nominacion;
+grant miembro_academia insert on votos;
 grant miembro_academia insert on postulacion;
 
 create role Administrador_academia;
