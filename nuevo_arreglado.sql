@@ -112,7 +112,6 @@ ALTER TABLE miembro_academia ADD CONSTRAINT miembro_academia_pk PRIMARY KEY ( id
 CREATE TABLE nominacion (
     id          serial not null,
     ganador                         CHAR(1) NOT NULL,
-    postulacion_id_pelicula         INTEGER NOT NULL,
 
     post_categoria_premio_id        INTEGER NOT NULL,
     postulacion_id_miembroaacc      INTEGER NOT NULL,
@@ -123,7 +122,7 @@ CREATE TABLE nominacion (
 
 ALTER TABLE nominacion
     ADD CONSTRAINT nominacion_pk PRIMARY KEY ( id,
-                                               postulacion_id_pelicula,
+                                               
                                                post_categoria_premio_id,
                                                postulacion_id_miembroaacc,
                                                postulacion_id,
@@ -182,7 +181,7 @@ ALTER TABLE persona ADD CONSTRAINT persona_pk PRIMARY KEY ( doc_identidad );
 
 
 CREATE TABLE postulacion (
-    id               serial not null,
+    id                              serial not null,
     anio_oscar                       INTEGER NOT NULL,
     pelicula_postulada_id_pelicula  INTEGER NOT NULL,
     categoria_premio_id             INTEGER NOT NULL,
@@ -372,14 +371,14 @@ ALTER TABLE votos
 
 ALTER TABLE votos
     ADD CONSTRAINT votos_nominacion_fk FOREIGN KEY ( nominacion_id,
-                                                     nominacion_post_id_pelicula,
+
                                                      nom_post_cat_premio_id,
                                                      nominacion_postulacion_id_miemb,
                                                      nominacion_postulacion_id,
                                                      nominacion_postulacion_año_oscar,
                                                      nom_post_doc_identidad1 )
         REFERENCES nominacion ( id,
-                                postulacion_id_pelicula,
+
                                 post_categoria_premio_id,
                                 postulacion_id_miembroaacc,
                                 postulacion_id,
