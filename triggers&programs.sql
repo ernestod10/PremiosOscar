@@ -29,6 +29,33 @@ FOR EACH ROW
 execute procedure duplicado_postular();
 END;
 
+create or replace function verificar_categoria() returns trigger as $vpTrigger$
+    declare
+        duplicado boolean;
+        id_categoria integer;
+
+    begin
+        for id_categoria in (select a_c.categoria_premio_id from a_c where miembro_academia_id_miembro = New.miembro_academia_id_maacc) loop
+
+
+            if (select id from postulacion where (pelicula_postulada_id_pelicula = new.pelicula_postulada_id_pelicula or (p_m_r_id_pelicula = new.p_m_r_id_pelicula and  p_m_r_doc_identidad = new.p_m_r_doc_identidad) )and id_categoria = new.categoria_premio_id ) then
+            duplicado = true;
+            end if;
+
+            end loop;
+
+
+        if (duplicado) then
+            raise exception 'ya esta pelicula esta postulada para esta categoria';
+        end if;
+    end;
+    $vpTrigger$ language plpgsql;
+
+
+Create  TRIGGER "postulacion_duplicado_trigger" BEFORE INSERT or update ON "postulacion"
+FOR EACH ROW
+execute procedure verificar_categoria();
+END;
 
 
 --cuenta los votos de postulacion e inserta en nominados
@@ -41,27 +68,25 @@ AS $$
     limite integer;
     BEGIN
     FOR id_cat in (select id from categoria_premio where nivel = 2)LOOP
-        if (id_cat ==5) then --se cambia luego por el id de mejor pelicula
+        if (id_cat ==16) then --se cambia luego por el id de mejor pelicula
         limite=10;
             else
             limite =5;
         end if;
-        For id_post in (select p.id from postulacion p inner join votos v on p.id = v.postulacion_id where  post_categoria_premio_id = id_cat and v.tipo = ('n') and p.año_oscar = year
+        For id_post in (select p.id from postulacion p inner join votos v on p.id = v.postulacion_id where  post_categoria_premio_id = id_cat and v.tipo = ('n') and p.anio_oscar = year
                                           group by p.id
                                           order by count(v.postulacion_id)
                                           desc limit limite)
             LOOP
-            insert into nominacion (ganador, postulacion_id_pelicula, post_categoria_premio_id, postulacion_id, postulacion_año_oscar)
-            VALUES (FALSE,(select pelicula_postulada_id_pelicula from postulacion where id = id_post), id_cat,id_post,year);
+            insert into nominacion (ganador, postulacion_id_pelicula, post_categoria_premio_id, postulacion_id_miembroaacc, postulacion_id, postulacion_año_oscar, postulacion_doc_identidad)
 
-
-
+            VALUES (FALSE,(select pelicula_postulada_id_pelicula from postulacion where id = id_post), id_cat,(select miembro_academia_id_maacc from postulacion where postulacion.id = id_post),id_post,year,(select miembro_academia_doc_identidad from postulacion where postulacion.id = id_post));
+            update pelicula_postulada  set total_nominaciones = total_nominaciones+1 where id_pelicula = (select pelicula_postulada_id_pelicula from postulacion where id = id_post);
         END LOOP;
     END LOOP;
     END;
 $$
 language plpgsql;
-
 --cuenta los votos de nominados y hace update al ganador
 
 Create or replace PROCEDURE votos_ganador (year Integer )
