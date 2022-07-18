@@ -19,21 +19,22 @@ create or replace function duplicado_postular_trigger() returns trigger as $post
             raise exception 'ya la pelicula en esa categoria esta postulada';
         end if;
     end;
-    $$ language plpgsql;
+    $postulacion_trigger$ language plpgsql;
 Create  TRIGGER "duplicado_trigger" BEFORE INSERT ON "postulacion"
 FOR EACH ROW
 execute procedure duplicado_postular_trigger();
 END;
+
 --------------------------------------------------------------------------------------------------------------------
-create or replace function postulacion_trigger() returns trigger as $$
+create or replace function post_trigger() returns trigger as $$
     begin
-       insert into votos_postular (anio, pelicula_postulada_id_pelicula, miembro_academia_id_miembro, miembro_academia_doc_identidad) VALUES 
+       insert into votos_postular (anio, pelicula_postulada_id_pelicula, miembro_academia_id_miembro, miembro_academia_doc_identidad) VALUES
                                                                                                                                           (new.anio_oscar,new.pelicula_postulada_id_pelicula,new.miembro_academia_id_maacc,new.miembro_academia_doc_identidad);
     end;
     $$ language plpgsql;
 Create  TRIGGER "postulacion_trigger" after INSERT ON "postulacion"
 FOR EACH ROW
-execute procedure postulacion();
+execute procedure post_trigger();
 END;
 
 
@@ -70,7 +71,7 @@ END;
 
 --cuenta los votos de postulacion e inserta en nominados
 
-Create or replace PROCEDURE votos_nominacion (year Integer )
+Create or replace PROCEDURE votos_nominacion(year Integer)
 AS $$
     DECLARE
     id_post Integer;
@@ -78,7 +79,7 @@ AS $$
     limite integer;
     BEGIN
     FOR id_cat in (select id from categoria_premio where nivel = 2)LOOP
-        if (id_cat ==16) then --se cambia luego por el id de mejor pelicula
+        if (id_cat = 16) then --se cambia luego por el id de mejor pelicula
         limite=10;
             else
             limite =5;
@@ -90,7 +91,7 @@ AS $$
             LOOP
             insert into nominacion (ganador, post_categoria_premio_id, postulacion_id_miembroaacc, postulacion_id, postulacion_año_oscar, postulacion_doc_identidad)
 
-            VALUES (FALSE, id_cat,(select miembro_academia_id_maacc from postulacion where postulacion.id = id_post),id_post,year,(select miembro_academia_doc_identidad from postulacion where postulacion.id = id_post));
+            VALUES ('n', id_cat,(select miembro_academia_id_maacc from postulacion where postulacion.id = id_post),id_post,year,(select miembro_academia_doc_identidad from postulacion where postulacion.id = id_post));
             update pelicula_postulada  set total_nominaciones = total_nominaciones+1 where id_pelicula = (select pelicula_postulada_id_pelicula from postulacion where id = id_post);
         END LOOP;
     END LOOP;
@@ -121,6 +122,11 @@ $$
 language plpgsql;
 
 
+create or replace procedure votar_nominado(id_postulacion integer, id_miembro integer)as $$
+    BEGIN
+insert into votos(fecha_hora, tipo, miembro_academia_doc_identidad, miembro_academia_id_miembro, post_categoria_premio_id, postulacion_id_miembroaacc, postulacion_id, postulacion_año_oscar,postulacion_doc_identidad1)
+        values (current_timestamp,'n',(select persona_doc_identidad  from miembro_academia where id_miembroaacc=id_miembro),id_miembro,(select categoria_premio_id from postulacion where postulacion.id = id_postulacion),(select miembro_academia_id_maacc from postulacion where postulacion.id = id_postulacion),id_postulacion,(select anio_oscar from postulacion where postulacion.id = id_postulacion),(select postulacion.miembro_academia_doc_identidad from postulacion where postulacion.id = id_postulacion));
+end;$$ language plpgsql;
 
 
 
@@ -138,16 +144,16 @@ language plpgsql;
 
 --Cuentas de usuario final
 Create role Miembro_Academia;
-grant Miembro_Academia select on pelicula_postulada;
-grant Miembro_Academia insert on pelicula_postulada;
-grant Miembro_Academia select on postulacion;
-grant Miembro_Academia select on nominacion;
-grant miembro_academia insert on votos;
-grant miembro_academia insert on postulacion;
+grant  select on pelicula_postulada to Miembro_Academia;
+grant  insert on pelicula_postulada  to Miembro_Academia;
+grant  select on postulacion  to Miembro_Academia;
+grant  select on nominacion  to Miembro_Academia;
+grant  insert on votos to Miembro_Academia;
+grant  insert on postulacion to Miembro_Academia;
 
 create role Administrador_academia;
-grant Administrador_academia execute on votos_nominacion;
-grant Administrador_academia execute on votos_ganador;
+grant  execute on procedure votos_nominacion(year integer) to Administrador_academia;
+grant  execute on procedure votos_ganador(year integer) to Administrador_academia;
 
 
 

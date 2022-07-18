@@ -235,13 +235,13 @@ CREATE TABLE votos (
     miembro_academia_id_miembro                INTEGER NOT NULL,
 
     nominacion_id                              INTEGER ,
-    nominacion_post_id_pelicula                INTEGER ,
+   
     nom_post_cat_premio_id                     INTEGER ,
     nominacion_postulacion_id_miemb            INTEGER ,
     nominacion_postulacion_id                  INTEGER ,
     nominacion_postulacion_año_oscar           INTEGER,
     nom_post_doc_identidad1                    INTEGER ,
-    postulacion_id_pelicula                    INTEGER ,
+    
     post_categoria_premio_id                   INTEGER ,
     postulacion_id_miembroaacc                 INTEGER ,
     postulacion_id                             INTEGER ,
@@ -256,26 +256,26 @@ ALTER TABLE votos
                                           miembro_academia_doc_identidad );
 
 alter table votos
-    add CONSTRAINT arc_voto check (( (nominacion_id is null )and (nominacion_post_id_pelicula is null) and
+    add CONSTRAINT arc_voto check (( (nominacion_id is null )and 
     (nom_post_cat_premio_id                     is null) and
     (nominacion_postulacion_id_miemb            is null) and
    ( nominacion_postulacion_id                  is null) and
     (nominacion_postulacion_año_oscar           is null) and
     (nom_post_doc_identidad1                    is null) and
-    (postulacion_id_pelicula                    is not null) and
+    
     (post_categoria_premio_id                   is not null) and
     (postulacion_id_miembroaacc                 is not null) and
     (postulacion_id                             is not null) and
    ( postulacion_año_oscar                      is not null) and
     (postulacion_doc_identidad1                 is null)  )or(
     (nominacion_id is null )and
-    (nominacion_post_id_pelicula is null) and
+
     (nom_post_cat_premio_id is null) and
     (nominacion_postulacion_id_miemb  is null) and
    ( nominacion_postulacion_id  is null) and
     (nominacion_postulacion_año_oscar           is null) and
     (nom_post_doc_identidad1                    is null) and
-    (postulacion_id_pelicula                    is not null) and
+    
     (post_categoria_premio_id                   is not null) and
     (postulacion_id_miembroaacc                 is not null) and
     (postulacion_id                             is not null) and
