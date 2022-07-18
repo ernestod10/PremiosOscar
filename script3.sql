@@ -38,12 +38,12 @@ ALTER TABLE a_c
 
 CREATE TABLE categoria_premio (
     id                  serial not null,
-    nombre              VARCHAR(28) NOT NULL,
+    nombre              VARCHAR(50) NOT NULL,
     nivel               INTEGER NOT NULL,
     rama                VARCHAR(28),
-    descripcion         VARCHAR(28) NOT NULL,
+    descripcion         TEXT NOT NULL,
     historico_premio	hist_premios[],
-    categoria_premio_id INTEGER NOT NULL
+    categoria_premio_id INTEGER
 );
 
 ALTER TABLE categoria_premio ADD CONSTRAINT categoria_premio_pk PRIMARY KEY ( id );
@@ -75,8 +75,8 @@ ALTER TABLE critica ADD CONSTRAINT critica_pk PRIMARY KEY ( id );
 
 CREATE TABLE donacion_organizacion (
     id            serial not null,
-    nombre        VARCHAR(28) NOT NULL,
-    mision        VARCHAR(28) NOT NULL,
+    nombre        VARCHAR(50) NOT NULL,
+    mision        TEXT NOT NULL,
     historico_donacion hist_donacion[]
 
 );
@@ -144,13 +144,13 @@ ALTER TABLE p_m_r
 
 CREATE TABLE pelicula_postulada (
     id_pelicula      serial not null,
-    nombre           VARCHAR(32) NOT NULL,
-    titulo_original  VARCHAR(32) NOT NULL,
+    nombre           VARCHAR(50) NOT NULL,
+    titulo_original  VARCHAR(50) NOT NULL,
     sinopsis         TEXT NOT NULL,
     anio              INTEGER NOT NULL,
     genero           TEXT ARRAY[4],
     pais             TEXT ARRAY[4],
-    distribuidor     VARCHAR(32) NOT NULL,
+    distribuidor     VARCHAR(50) NOT NULL,
     duracion_min     INTEGER NOT NULL,
     censura          VARCHAR(28) NOT NULL,
     fecha_estreno_la DATE NOT NULL,
@@ -165,7 +165,7 @@ ALTER TABLE pelicula_postulada ADD CONSTRAINT pelicula_postulada_pk PRIMARY KEY 
 CREATE TABLE persona (
     doc_identidad        INTEGER NOT NULL,
     nombre               VARCHAR(28) NOT NULL,
-    fecha_nacimiento     INTEGER NOT NULL,
+    fecha_nacimiento     DATE NOT NULL,
     apellido             VARCHAR(28) NOT NULL,
     segundo_Nombre       VARCHAR(28),
     segundo_Apellido     VARCHAR(28),
@@ -406,5 +406,3 @@ ALTER TABLE votos_postular
 ALTER TABLE votos_postular
     ADD CONSTRAINT VPpelicula_postulada_fk FOREIGN KEY ( pelicula_postulada_id_pelicula )
         REFERENCES pelicula_postulada ( id_pelicula );
-
---Triggers
